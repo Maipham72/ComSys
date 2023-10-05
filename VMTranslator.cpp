@@ -163,36 +163,40 @@ string VMTranslator::vm_sub() {
 
 /** Generate Hack Assembly code for a VM neg operation */
 string VMTranslator::vm_neg() {
-  string result;
-  result =
+  string assemblyCode =
       "@SP\n"
-      "A=M-1\n"
-      "M=-M\n";
-  return result;
+      "M=M-1\n"
+      "A=M\n"   // Set A to point to the top element
+      "M=-M\n"  // Negate the value of the top element
+
+      // Increment SP to account for the result
+      "@SP\n"
+      "M=M+1\n";
+  return assemblyCode;
 }
 
 /** Generate Hack Assembly code for a VM eq operation */
 string VMTranslator::vm_eq() {
   string assemblyCode =
       "@SP\n"
-      "M=M-1\n"
-      "A=M\n"  // Set A to point to the top element
+      "AM=M-1\n"
       "D=M\n"  // Store the value of the top element in D
 
       // Decrement SP again to access the second top element
       "@SP\n"
-      "M=M-1\n"
-      "A=M\n"    // Set A to point to the second top element
+      "AM=M-1\n"
       "D=M-D\n"  // Subtract the top element from the second top element
-
-      // Set the result to true (-1) if D is 0, otherwise, set it to false (0)
-      "M=0\n"
-      "@EQUAL_TRUE\n"
-      "D;JEQ\n"
+      "@LabelTrue\n"
+      "D;JEQ\n"  
+      "D=0\n"
+      "@LabelFalse\n"
+      "0;JMP\n"
+      "(LabelTrue)\n"
+      "D=-1\n"
+      "(LabelFalse)\n"  // Set to true (-1)
       "@SP\n"
       "A=M\n"
-      "M=-1\n"  // Set to true (-1)
-      "(EQUAL_TRUE)\n"
+      "M=D\n"
 
       // Increment SP to account for the result
       "@SP\n"
