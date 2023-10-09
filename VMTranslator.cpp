@@ -229,21 +229,87 @@ string VMTranslator::vm_or() { return ""; }
 string VMTranslator::vm_not() { return ""; }
 
 /** Generate Hack Assembly code for a VM label operation */
-string VMTranslator::vm_label(string label) { return ""; }
+string VMTranslator::vm_label(string label) { 
+  string result;
+  result += "(" + label + ")\n";
+  return result; 
+}
 
 /** Generate Hack Assembly code for a VM goto operation */
-string VMTranslator::vm_goto(string label) { return ""; }
+string VMTranslator::vm_goto(string label) { 
+  string result;
+  result += "@" + label + "\n";
+  result += "0;JMP\n";
+  return result; 
+}
 
 /** Generate Hack Assembly code for a VM if-goto operation */
-string VMTranslator::vm_if(string label) { return ""; }
+string VMTranslator::vm_if(string label) {
+  string result;
+  result += "@SP\n";
+  result += "AM=M-1\n";
+  result += "D=M\n";
+  result += "@" + label + "\n";
+  result += "D;JNE\n";
+  return result; 
+  }
 
 /** Generate Hack Assembly code for a VM function operation */
 string VMTranslator::vm_function(string function_name, int n_vars) {
-  return "";
+  string result;
+  result += "(" + function_name + ")\n";
+  for (int i = 0; i < n_vars; i++) {
+    result += "@SP\n";
+    result += "AM=M+1\n";
+    result += "A=A-1\n";
+    result += "M=0\n";
+  }
+  return result;
 }
 
 /** Generate Hack Assembly code for a VM call operation */
-string VMTranslator::vm_call(string function_name, int n_args) { return ""; }
+string VMTranslator::vm_call(string function_name, int n_args) { 
+  string result;
+  result += "@RETURN_ADDRESS_" + function_name + "\n";
+  result += "D=A\n";
+  result += "@SP\n";
+  result += "AM=M+1\n";
+  result += "A=A-1\n";
+  result += "M=D\n";
+
+  result += "@LCL\n";
+  result += "D=M\n";
+  result += "@SP\n";
+  result += "AM=M+1\n";
+  result += "A=A-1\n";
+  result += "M=D\n";
+
+  result += "@ARG\n";
+  result += "D=M\n";
+  result += "@SP\n";
+  result += "AM=M+1\n";
+  result += "A=A-1\n";
+  result += "M=D\n";
+
+  result += "@SP\n";
+  result += "D=M\n";
+  result += "@5\n";
+  result += "D=D-A\n";
+  result += "@" + to_string(n_args) + "\n";
+  result += "D=D-A\n";
+  result += "@ARG\n";
+  result += "M=D\n";
+
+  result += "@SP\n";
+  result += "D=M\n";
+  result += "@LCL\n";
+  result += "M=D\n";
+
+  result += "@" + function_name + "\n";
+  result += "0;JMP\n";
+
+  return result; 
+}
 
 /** Generate Hack Assembly code for a VM return operation */
 string VMTranslator::vm_return() { return ""; }
