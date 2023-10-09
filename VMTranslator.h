@@ -37,21 +37,21 @@ class VMTranslator {
         static string vm_return();
     
     
-    static void write( string vmCode);
-    string registerName( string segment, int offset);
-    int symbolCounter;
-    enum VMSegments {
-            local,
-            argument,
-            thiss,
-            that,
-            constant,
-            staticc,
-            pointer,
-            temp
-        };
-    map< string, VMSegments> map_segments;
-    stringstream ASM;
+    // static void write( string vmCode);
+    // string registerName( string segment, int offset);
+    // int symbolCounter;
+    // enum VMSegments {
+    //         local,
+    //         argument,
+    //         thiss,
+    //         that,
+    //         constant,
+    //         staticc,
+    //         pointer,
+    //         temp
+    //     };
+    // map< string, VMSegments> map_segments;
+    // stringstream ASM;
 
 };
 

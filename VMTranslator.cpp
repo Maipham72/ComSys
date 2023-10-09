@@ -7,111 +7,111 @@ using namespace std;
  */
 VMTranslator::VMTranslator() {
   // Your code here
-  ASM.str(string());
-  symbolCounter = 0;
-  map_segments.clear();
-  map_segments.insert(pair<string, VMSegments>("local", local));
-  map_segments.insert(pair<string, VMSegments>("argument", argument));
-  map_segments.insert(pair<string, VMSegments>("this", thiss));
-  map_segments.insert(pair<string, VMSegments>("that", that));
-  map_segments.insert(pair<string, VMSegments>("constant", constant));
-  map_segments.insert(pair<string, VMSegments>("static", staticc));
-  map_segments.insert(pair<string, VMSegments>("pointer", pointer));
-  map_segments.insert(pair<string, VMSegments>("temp", temp));
+  // ASM.str(string());
+  // symbolCounter = 0;
+  // map_segments.clear();
+  // map_segments.insert(pair<string, VMSegments>("local", local));
+  // map_segments.insert(pair<string, VMSegments>("argument", argument));
+  // map_segments.insert(pair<string, VMSegments>("this", thiss));
+  // map_segments.insert(pair<string, VMSegments>("that", that));
+  // map_segments.insert(pair<string, VMSegments>("constant", constant));
+  // map_segments.insert(pair<string, VMSegments>("static", staticc));
+  // map_segments.insert(pair<string, VMSegments>("pointer", pointer));
+  // map_segments.insert(pair<string, VMSegments>("temp", temp));
 }
 
-void VMTranslator::write(string vmCode) {
-  VMTranslator vmTranslator;
-  if (vmCode.find("(") == string::npos) vmTranslator.ASM << "\t";
-  vmTranslator.ASM << vmCode << endl;
-}
+// void VMTranslator::result += string vmCode) {
+//   VMTranslator vmTranslator;
+//   if (vmCode.find("(") == string::npos) vmTranslator.ASM << "\t";
+//   vmTranslator.ASM << vmCode << endl;
+// }
 
 /**
  * VMTranslator destructor
  */
 VMTranslator::~VMTranslator() {
   // Your code here
-  map_segments.clear();
+  // map_segments.clear();
 }
 
-string VMTranslator::registerName(string segment, int offset) {
-  string registerStr;
-  if (segment == "local") {
-    registerStr = "LCL";
-  }
-  if (segment == "argument") {
-    registerStr = "ARG";
-  }
-  if (segment == "this") {
-    registerStr = "THIS";
-  }
-  if (segment == "that") {
-    registerStr = "THAT";
-  }
-  if (segment == "static") {
-    registerStr = "16";
-  }
-  if (segment == "pointer") {
-    registerStr = "R" + to_string(3 + offset);
-  }
-  if (segment == "temp") {
-    registerStr = "R" + to_string(5 + offset);
-  }
-  return registerStr + to_string(offset);
-}
+// string VMTranslator::registerName(string segment, int offset) {
+//   string registerStr;
+//   if (segment == "local") {
+//     registerStr = "LCL";
+//   }
+//   if (segment == "argument") {
+//     registerStr = "ARG";
+//   }
+//   if (segment == "this") {
+//     registerStr = "THIS";
+//   }
+//   if (segment == "that") {
+//     registerStr = "THAT";
+//   }
+//   if (segment == "static") {
+//     registerStr = "16";
+//   }
+//   if (segment == "pointer") {
+//     registerStr = "R" + to_string(3 + offset);
+//   }
+//   if (segment == "temp") {
+//     registerStr = "R" + to_string(5 + offset);
+//   }
+//   return registerStr + to_string(offset);
+// }
 
 /** Generate Hack Assembly code for a VM push operation */
 string VMTranslator::vm_push(string segment, int offset) {
-  VMTranslator vmTranslator;
-  vmTranslator.ASM.str(string());
-  string index = to_string(offset);
-  string registerStr = vmTranslator.registerName(segment, offset);
-  switch (vmTranslator.map_segments[segment]) {
-    case constant:
-      write("@" + index + " " + segment + " " + index);
-      write("D=A");
-      write("@SP");
-      write("A=M");
-      write("M=D");
-      write("@SP");
-      write("M=M+1");
-      break;
+  // VMTranslator vmTranslator;
+  // vmTranslator.ASM.str(string());
+  // string index = to_string(offset);
+  // string registerStr = vmTranslator.registerName(segment, offset);
+  // switch (vmTranslator.map_segments[segment]) {
+  //   case constant:
+  //     result += "@" + index + " " + segment + " " + index);
+  //     result += "D=A");
+  //     result += "@SP");
+  //     result += "A=M");
+  //     result += "M=D");
+  //     result += "@SP");
+  //     result += "M=M+1");
+  //     break;
 
-    case staticc:
-    case temp:
-    case pointer:
-      write("@" + registerStr + " " + segment + " " + index);
-      write("D=A");
-      write("@" + index);
-      write("A=D+A");
-      write("D=M");
-      write("@SP");
-      write("A=M");
-      write("M=D");
-      write("@SP");
-      write("M=M+1");
-      break;
+  //   case staticc:
+  //   case temp:
+  //   case pointer:
+  //     result += "@" + registerStr + " " + segment + " " + index);
+  //     result += "D=A");
+  //     result += "@" + index);
+  //     result += "A=D+A");
+  //     result += "D=M");
+  //     result += "@SP");
+  //     result += "A=M");
+  //     result += "M=D");
+  //     result += "@SP");
+  //     result += "M=M+1");
+  //     break;
 
-    case argument:
-    case local:
-    case thiss:
-    case that:
-      write("@" + registerStr + " " + segment + " " + index);
-      write("D=M");
-      write("@" + index);
-      write("A=D+A");
-      write("D=M");
-      write("@SP");
-      write("A=M");
-      write("M=D");
-      write("@SP");
-      write("M=M+1");
-      break;
+  //   case argument:
+  //   case local:
+  //   case thiss:
+  //   case that:
+  //     result += "@" + registerStr + " " + segment + " " + index);
+  //     result += "D=M");
+  //     result += "@" + index);
+  //     result += "A=D+A");
+  //     result += "D=M");
+  //     result += "@SP");
+  //     result += "A=M");
+  //     result += "M=D");
+  //     result += "@SP");
+  //     result += "M=M+1");
+  //     break;
 
-    default:
-      break;
-  }
-  return vmTranslator.ASM.str() + "\n";
+  //   default:
+  //     break;
+  // }
+  // return vmTranslator.ASM.str() + "\n";
 }
 
 /** Generate Hack Assembly code for a VM pop operation */
@@ -121,26 +121,24 @@ string VMTranslator::vm_pop(string segment, int offset) {
 
 /** Generate Hack Assembly code for a VM add operation */
 string VMTranslator::vm_add() {
-  VMTranslator vmTranslator;
-  vmTranslator.ASM.str(string());
-  write("@SP // add");
-  write("AM=M-1");
-  write("D=M");
-  write("A=A-1");
-  write("M=D+M");
-  return vmTranslator.ASM.str() + "\n";
+  string result;
+  result += "@SP\n";
+  result += "AM=M-1\n";
+  result += "D=M\n";
+  result += "A=A-1\n";
+  result += "M=D+M\n";
+  return result;
 }
 
 /** Generate Hack Assembly code for a VM sub operation */
 string VMTranslator::vm_sub() {
-    VMTranslator vmTranslator;
-    vmTranslator.ASM.str(string());
-    write("@SP // sub");
-    write("AM=M-1");
-    write("D=M");
-    write("A=A-1");
-    write("M=M-D");
-    return vmTranslator.ASM.str() + "\n";
+    string result;
+    result += "@SP\n";
+    result += "AM=M-1\n";
+    result += "D=M\n";
+    result += "A=A-1\n";
+    result += "M=M-D\n";
+    return result;
 }
 
 /** Generate Hack Assembly code for a VM neg operation */
