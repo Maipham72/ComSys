@@ -105,7 +105,7 @@ string VMTranslator::vm_push(string segment, int offset) {
       write("@SP");
       write("M=M+1");
       break;
-    
+
     default:
       break;
   }
@@ -113,86 +113,28 @@ string VMTranslator::vm_push(string segment, int offset) {
 }
 
 /** Generate Hack Assembly code for a VM pop operation */
-string VMTranslator::vm_pop(string segment, int offset) {
-  string assemblyCode;
-
-  if (segment == "local" || segment == "argument" || segment == "this" ||
-      segment == "that") {
-    // Calculate the target address in the selected segment
-    string segmentPointer;
-    if (segment == "local") {
-      segmentPointer = "LCL";
-    } else if (segment == "argument") {
-      segmentPointer = "ARG";
-    } else if (segment == "this") {
-      segmentPointer = "THIS";
-    } else if (segment == "that") {
-      segmentPointer = "THAT";
-    }
-
-    // Calculate the target address: *(segmentPointer + offset)
-    assemblyCode = "@" + segmentPointer +
-                   "\n"
-                   "D=M\n"  // D = segment base address
-                   "@" +
-                   to_string(offset) +
-                   "\n"
-                   "A=D+A\n"  // A = segment base address + offset
-
-                   // Store the target address in a temporary location (R13)
-                   "D=A\n"
-                   "@R13\n"
-                   "M=D\n"
-
-                   // Decrement SP to access the top element
-                   "@SP\n"
-                   "M=M-1\n"
-                   "A=M\n"  // Set A to point to the top element
-
-                   // Pop the value from the stack into D
-                   "D=M\n"
-
-                   // Retrieve the target address from R13
-                   "@R13\n"
-                   "A=M\n"
-
-                   // Store the value from D into the target address
-                   "M=D\n";
-  }
-  // Add more cases for other memory segments (e.g., static, pointer, temp)
-
-  return assemblyCode;
-  // string result;
-  // string index = to_string(offset);
-
-  // result = "@" + index + " " + segment + " " + index + "\n" + "D=A\n" + "@" +
-  //          index + "\n" + "D=D+A\n" + "@R13\n" + "M=D\n" + "@SP\n" +
-  //          "AM = M-1\n" + "D=M\n" + "@R13\n" + "A=M\n" + "M=D\n";
-  // return result;
-}
+string VMTranslator::vm_pop(string segment, int offset) {}
 
 /** Generate Hack Assembly code for a VM add operation */
 string VMTranslator::vm_add() {
-  string result;
-  result =
-      "@SP\n"
-      "AM=M-1\n"
-      "D=M\n"
-      "A=A-1\n"
-      "M=M+D\n";
-  return result;
+  ASM.str(string());
+  write("@SP // add");
+  write("AM=M-1");
+  write("D=M");
+  write("A=A-1");
+  write("M=D+M");
+  return ASM.str() + "\n";
 }
 
 /** Generate Hack Assembly code for a VM sub operation */
 string VMTranslator::vm_sub() {
-  string result;
-  result =
-      "@SP\n"
-      "AM=M-1\n"
-      "D=M\n"
-      "A=A-1\n"
-      "M=M-D\n";
-  return result;
+    ASM.str(string());
+    write("@SP // sub");
+    write("AM=M-1");
+    write("D=M");
+    write("A=A-1");
+    write("M=M-D");
+    return ASM.str() + "\n";
 }
 
 /** Generate Hack Assembly code for a VM neg operation */
