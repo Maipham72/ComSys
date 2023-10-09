@@ -21,8 +21,9 @@ VMTranslator::VMTranslator() {
 }
 
 void VMTranslator::write(string vmCode) {
-  if (vmCode.find("(") == string::npos) ASM << "\t";
-  ASM << vmCode << endl;
+  VMTranslator vmTranslator;
+  if (vmCode.find("(") == string::npos) vmTranslator.ASM << "\t";
+  vmTranslator.ASM << vmCode << endl;
 }
 
 /**
@@ -61,10 +62,11 @@ string VMTranslator::registerName(string segment, int offset) {
 
 /** Generate Hack Assembly code for a VM push operation */
 string VMTranslator::vm_push(string segment, int offset) {
-  ASM.str(string());
+  VMTranslator vmTranslator;
+  vmTranslator.ASM.str(string());
   string index = to_string(offset);
-  string registerStr = registerName(segment, offset);
-  switch (map_segments[segment]) {
+  string registerStr = vmTranslator.registerName(segment, offset);
+  switch (vmTranslator.map_segments[segment]) {
     case constant:
       write("@" + index + " " + segment + " " + index);
       write("D=A");
@@ -109,32 +111,36 @@ string VMTranslator::vm_push(string segment, int offset) {
     default:
       break;
   }
-  return ASM.str() + "\n";
+  return vmTranslator.ASM.str() + "\n";
 }
 
 /** Generate Hack Assembly code for a VM pop operation */
-string VMTranslator::vm_pop(string segment, int offset) {}
+string VMTranslator::vm_pop(string segment, int offset) {
+  
+}
 
 /** Generate Hack Assembly code for a VM add operation */
 string VMTranslator::vm_add() {
-  ASM.str(string());
+  VMTranslator vmTranslator;
+  vmTranslator.ASM.str(string());
   write("@SP // add");
   write("AM=M-1");
   write("D=M");
   write("A=A-1");
   write("M=D+M");
-  return ASM.str() + "\n";
+  return vmTranslator.ASM.str() + "\n";
 }
 
 /** Generate Hack Assembly code for a VM sub operation */
 string VMTranslator::vm_sub() {
-    ASM.str(string());
+    VMTranslator vmTranslator;
+    vmTranslator.ASM.str(string());
     write("@SP // sub");
     write("AM=M-1");
     write("D=M");
     write("A=A-1");
     write("M=M-D");
-    return ASM.str() + "\n";
+    return vmTranslator.ASM.str() + "\n";
 }
 
 /** Generate Hack Assembly code for a VM neg operation */
