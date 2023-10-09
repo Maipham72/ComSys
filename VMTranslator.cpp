@@ -9,6 +9,22 @@ using namespace std;
  */
 VMTranslator::VMTranslator() {
   // Your code here
+  ASM.str(string());
+  symbolCounter = 0;
+  map_segments.clear();
+  map_segments.insert(pair<string, VMSegments>("local", local));
+  map_segments.insert(pair<string, VMSegments>("argument", argument));
+  map_segments.insert(pair<string, VMSegments>("this", thiss));
+  map_segments.insert(pair<string, VMSegments>("that", that));
+  map_segments.insert(pair<string, VMSegments>("constant", constant));
+  map_segments.insert(pair<string, VMSegments>("static", staticc));
+  map_segments.insert(pair<string, VMSegments>("pointer", pointer));
+  map_segments.insert(pair<string, VMSegments>("temp", temp));
+}
+
+void VMTranslator::write(string vmCode) {
+  if (vmCode.find("(") == string::npos) ASM << "\t";
+  ASM << vmCode << endl;
 }
 
 /**
@@ -16,66 +32,86 @@ VMTranslator::VMTranslator() {
  */
 VMTranslator::~VMTranslator() {
   // Your code here
+  map_segments.clear();
+}
+
+string VMTranslator::registerName(string segment, int offset) {
+  string registerStr;
+  if (segment == "local") {
+    registerStr = "LCL";
+  }
+  if (segment == "argument") {
+    registerStr = "ARG";
+  }
+  if (segment == "this") {
+    registerStr = "THIS";
+  }
+  if (segment == "that") {
+    registerStr = "THAT";
+  }
+  if (segment == "static") {
+    registerStr = "16";
+  }
+  if (segment == "pointer") {
+    registerStr = "R" + to_string(3 + offset);
+  }
+  if (segment == "temp") {
+    registerStr = "R" + to_string(5 + offset);
+  }
+  return registerStr + to_string(offset);
 }
 
 /** Generate Hack Assembly code for a VM push operation */
 string VMTranslator::vm_push(string segment, int offset) {
-  string assemblyCode;
+  ASM.str(string());
+  string index = to_string(offset);
+  string registerStr = registerName(segment, offset);
+  switch (map_segments[segment]) {
+    case constant:
+      write("@" + index + " " + segment + " " + index);
+      write("D=A");
+      write("@SP");
+      write("A=M");
+      write("M=D");
+      write("@SP");
+      write("M=M+1");
+      break;
 
-  if (segment == "constant") {
-    // Push a constant value onto the stack
-    assemblyCode =
-        "@" + to_string(offset) +
-        "\n"
-        "D=A\n"  // Load the constant value into D
-        "@SP\n"
-        "A=M\n"
-        "M=D\n"  // Store the value at the current stack pointer location
-        "@SP\n"
-        "M=M+1\n";  // Increment the stack pointer
-  } else if (segment == "local" || segment == "argument" || segment == "this" ||
-             segment == "that") {
-    // Push from a memory segment (local, argument, this, or that)
-    string segmentPointer;
-    if (segment == "local") {
-      segmentPointer = "LCL";
-    } else if (segment == "argument") {
-      segmentPointer = "ARG";
-    } else if (segment == "this") {
-      segmentPointer = "THIS";
-    } else if (segment == "that") {
-      segmentPointer = "THAT";
-    }
+    case staticc:
+    case temp:
+    case pointer:
+      write("@" + registerStr + " " + segment + " " + index);
+      write("D=A");
+      write("@" + index);
+      write("A=D+A");
+      write("D=M");
+      write("@SP");
+      write("A=M");
+      write("M=D");
+      write("@SP");
+      write("M=M+1");
+      break;
 
-    // Calculate the address to access in the selected segment
-    assemblyCode = "@" + segmentPointer +
-                   "\n"
-                   "D=M\n"  // Load the segment base address into D
-                   "@" +
-                   to_string(offset) +
-                   "\n"
-                   "A=D+A\n"  // Calculate the target address: segment base
-                              // address + offset
-                   "D=M\n"    // Load the value at the target address into D
-
-                   // Push the value onto the stack
-                   "@SP\n"
-                   "A=M\n"
-                   "M=D\n"
-                   "@SP\n"
-                   "M=M+1\n";  // Increment the stack pointer
+    case argument:
+    case local:
+    case thiss:
+    case that:
+      write("@" + registerStr + " " + segment + " " + index);
+      write("D=M");
+      write("@" + index);
+      write("A=D+A");
+      write("D=M");
+      write("@SP");
+      write("A=M");
+      write("M=D");
+      write("@SP");
+      write("M=M+1");
+      break;
+    
+    default:
+      break;
   }
-  // Add more cases for other memory segments (e.g., static, pointer, temp)
-
-  return assemblyCode;
-  // string result;
-  // string index = to_string(offset);
-
-  // // if (segment == "constant") {
-  // result = "@" + index + " " + segment + " " + index + "\n" + "D=A\n" +
-  //          "@SP\n" + "A=M\n" + "M=D\n" + "@SP\n" + "M=M+1\n";
-  // //}
-  // return result;
+  return ASM.str() + "\n";
 }
 
 /** Generate Hack Assembly code for a VM pop operation */
@@ -187,7 +223,7 @@ string VMTranslator::vm_eq() {
       "AM=M-1\n"
       "D=M-D\n"  // Subtract the top element from the second top element
       "@LabelTrue\n"
-      "D;JEQ\n"  
+      "D;JEQ\n"
       "D=0\n"
       "@LabelFalse\n"
       "0;JMP\n"

@@ -2,6 +2,8 @@
 #define VMTRANSLATOR_H
 
 #include <string>
+#include <map>
+#include <sstream>
 
 using namespace std;
 
@@ -33,7 +35,24 @@ class VMTranslator {
         static string vm_function(string function_name, int n_vars);
         static string vm_call(string function_name, int n_args);
         static string vm_return();
-        
+    
+    private:
+     static void write(string vmCode);
+     static string registerName(string segment, int offset);
+     int symbolCounter;
+     enum VMSegments {
+            local,
+            argument,
+            thiss,
+            that,
+            constant,
+            staticc,
+            pointer,
+            temp
+        };
+     static map<string, VMSegments> map_segments;
+     static stringstream ASM;
+
 };
 
 #endif /* VMTRANSLATOR_H */
