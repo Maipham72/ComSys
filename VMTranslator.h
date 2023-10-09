@@ -14,31 +14,31 @@ class VMTranslator {
         VMTranslator();
         ~VMTranslator();
 
-        static string vm_push(string segment, int offset);
-        static string vm_pop(string segment, int offset);
+        string vm_push(string segment, int offset);
+        string vm_pop(string segment, int offset);
 
-        static string vm_add();
-        static string vm_sub();
-        static string vm_neg();
+        string vm_add();
+        string vm_sub();
+        string vm_neg();
 
-        static string vm_eq();
-        static string vm_gt();
-        static string vm_lt();
-        static string vm_and();
-        static string vm_or();
-        static string vm_not();
+        string vm_eq();
+        string vm_gt();
+        string vm_lt();
+        string vm_and();
+        string vm_or();
+        string vm_not();
 
-        static string vm_label(string label);
-        static string vm_goto(string label);
-        static string vm_if(string label);
+        string vm_label(string label);
+        string vm_goto(string label);
+        string vm_if(string label);
 
-        static string vm_function(string function_name, int n_vars);
-        static string vm_call(string function_name, int n_args);
-        static string vm_return();
+        string vm_function(string function_name, int n_vars);
+        string vm_call(string function_name, int n_args);
+        string vm_return();
     
-    private:
-     static void write(string vmCode);
-     static string registerName(string segment, int offset);
+    
+     void write(string vmCode);
+    string registerName(string segment, int offset);
      int symbolCounter;
      enum VMSegments {
             local,
@@ -50,8 +50,8 @@ class VMTranslator {
             pointer,
             temp
         };
-     static map<string, VMSegments> map_segments;
-     static stringstream ASM;
+     map<string, VMSegments> map_segments;
+     stringstream ASM;
 
 };
 
