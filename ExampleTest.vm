@@ -1,4 +1,11 @@
-// Adds 2 numbers.
-push constant 1
-push constant 2
-add
+// label
+
+push constant 9
+push constant 7
+eg
+if-goto TRUE
+pop constant 0
+
+label TRUE
+pop constant -1
+

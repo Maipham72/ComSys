@@ -69,107 +69,151 @@ string VMTranslator::vm_push(string segment, int offset) {
 string VMTranslator::vm_pop(string segment, int offset) {
   string result = "";
 
-  if (segment == "static") {
-    result += "@SP\n";
-    result += "AM=M-1\n";
-    result += "D=M\n";
-    result += "@" + to_string(16 + offset) + "\n";
-    result += "D=A+D\n";
-    result += "@R13\n";
-    result += "M=D\n";
-    result += "@R13\n";
-    result += "A=M";
-    result += "M=D\n";
+  result += "@SP\n";
+  result += "AM=M-1\n";
+  result += "D=M\n";
 
+  if (segment == "local") {
+    result += "@LCL\n";
+  } else if (segment == "argument") {
+    result += "@ARG\n";
   } else if (segment == "this") {
-    result += "@SP\n";
-    result += "AM=M-1\n";
-    result += "D=M\n";
     result += "@THIS\n";
-    result += "D=M\n";
-    result += "@" + to_string(offset) + "\n";
-    result += "D=A+D\n";
-    result += "@R13\n";
-    result += "M=D";
-    result += "@SP\n";
-    result += "AD=M\n";
-    result += "@R13\n";
-    result += "A=M";
-    result += "M=D\n";
-
   } else if (segment == "that") {
-    result += "@SP\n";
-    result += "AM=M-1\n";
-    result += "D=M\n";
     result += "@THAT\n";
-    result += "D=M\n";
-    result += "@" + to_string(offset) + "\n";
-    result += "D=A+D\n";
-    result += "@R13\n";
-    result += "M=D";
-    result += "@SP\n";
-    result += "AD=M\n";
-    result += "@R13\n";
-    result += "A=M";
+  } else if (segment == "pointer") {
+    result += "@" + to_string(3 + offset) + "\n";
     result += "M=D\n";
-
+    return result;
   } else if (segment == "temp") {
-    result += "@SP\n";
-    result += "AM=M-1\n";
-    result += "D=M\n";
     result += "@" + to_string(5 + offset) + "\n";
     result += "M=D\n";
-
-  } else if (segment == "pointer") {
-    result += "@SP\n";
-    result += "AM=M-1\n";
-    result += "D=M\n";
-    result += "@" + to_string(3 + offset) + "\n";
-    result += "D=A+D\n";
-    result += "@R13\n";
+    return result;
+  } else if (segment == "static") {
+    result += "@" + to_string(16 + offset) + "\n";
     result += "M=D\n";
-    result += "@R13\n";
-    result += "A=M";
-    result += "M=D\n";
-
-
-  } else if (segment == "argument") {
-    result += "@SP\n";
-    result += "AM=M-1\n";
-    result += "D=M\n";
-    result += "@ARG\n";
-    result += "D=M\n";
-    result += "@" + to_string(offset) + "\n";
-    result += "D=A+D\n";
-    result += "@R13\n";
-    result += "M=D";
-    result += "@SP\n";
-    result += "A=M\n";
-    result += "D=M\n";
-    result += "@R13\n";
-    result += "A=M";
-    result += "M=D\n";
-
-
-  } else if (segment == "local") {
-    result += "@SP\n";
-    result += "AM=M-1\n";
-    result += "D=M\n";
-    result += "@LCL\n";
-    result += "D=M\n";
-    result += "@" + to_string(offset) + "\n";
-    result += "D=A+D\n";
-    result += "@R13\n";
-    result += "M=D";
-    result += "@SP\n";
-    result += "AD=M\n";
-    result += "@R13\n";
-    result += "A=M";
-    result += "M=D\n";
-
+    return result;
   }
+
+  result += "D=M\n";
+  result += "@" + to_string(offset) + "\n";
+  result += "D=A+D\n";
+  result += "@R13\n";
+  result += "M=D\n";
+  result += "@SP\n";
+  result += "A=M\n";
+  result += "D=M\n";
+  result += "@R13\n";
+  result += "A=M\n";
+  result += "M=D\n";
+
   return result;
 }
+
+// if (segment == "static") {
+//   result += "@SP\n";
+//   result += "AM=M-1\n";
+//   result += "D=M\n";
+//   result += "@" + to_string(16 + offset) + "\n";
+//   result += "M=D\n";
+
+// } else if (segment == "this") {
+//   result += "@SP\n";
+//   result += "AM=M-1\n";
+//   result += "D=M\n";
+//   result += "@THIS\n";
+//   result += "D=M\n";
+//   result += "@" + to_string(offset) + "\n";
+//   result += "D=A+D\n";
+//   result += "@R13\n";
+//   result += "M=D";
+//   result += "@SP\n";
+//   result += "A=M\n";
+//   result += "D=M\n";
+//   result += "@R13\n";
+//   result += "A=M";
+//   result += "M=D\n";
+
+// } else if (segment == "that") {
+//   result += "@SP\n";
+//   result += "AM=M-1\n";
+//   result += "D=M\n";
+//   result += "@THAT\n";
+//   result += "D=M\n";
+//   result += "@" + to_string(offset) + "\n";
+//   result += "D=A+D\n";
+//   result += "@R13\n";
+//   result += "M=D";
+//   result += "@SP\n";
+//   result += "A=M\n";
+//   result += "D=M\n";
+//   result += "@R13\n";
+//   result += "A=M";
+//   result += "M=D\n";
+
+// } else if (segment == "temp") {
+//   result += "@SP\n";
+//   result += "AM=M-1\n";
+//   result += "D=M\n";
+//   result += "@" + to_string(5 + offset) + "\n";
+//   result += "M=D\n";
+
+// } else if (segment == "pointer") {
+//   result += "@SP\n";
+//   result += "AM=M-1\n";
+//   result += "D=M\n";
+//   result += "@" + to_string(3 + offset) + "\n";
+//   result += "M=D\n";
+
+// } else if (segment == "argument") {
+//   result += "@SP\n";
+//   result += "AM=M-1\n";
+//   result += "D=M\n";
+//   result += "@ARG\n";
+//   result += "D=M\n";
+//   result += "@" + to_string(offset) + "\n";
+//   result += "D=A+D\n";
+//   result += "@R13\n";
+//   result += "M=D";
+//   result += "@SP\n";
+//   result += "A=M\n";
+//   result += "D=M\n";
+//   result += "@R13\n";
+//   result += "A=M";
+//   result += "M=D\n";
+
+// } else if (segment == "local") {
+//   result += "@SP\n";
+//   result += "AM=M-1\n";
+//   result += "D=M\n";
+//   result += "@LCL\n";
+//   result += "D=M\n";
+//   result += "@" + to_string(offset) + "\n";
+//   result += "D=A+D\n";
+//   result += "@R13\n";
+//   result += "M=D";
+//   result += "@SP\n";
+//   result += "A=M\n";
+//   result += "D=M\n";
+//   result += "@R13\n";
+//   result += "A=M";
+//   result += "M=D\n";
+// } else {
+//   result += "@SP\n";
+//   result += "AM=M-1\n";
+//   result += "D=M\n";
+//   result += "D=M\n";
+//   result += "@" + to_string(offset) + "\n";
+//   result += "D=A+D\n";
+//   result += "@R13\n";
+//   result += "M=D";
+//   result += "@SP\n";
+//   result += "A=M\n";
+//   result += "D=M\n";
+//   result += "@R13\n";
+//   result += "A=M";
+//   result += "M=D\n";
+// }
 
 /** Generate Hack Assembly code for a VM add operation */
 string VMTranslator::vm_add() {
@@ -357,6 +401,7 @@ string VMTranslator::vm_if(string label) {
 string VMTranslator::vm_function(string function_name, int n_vars) {
   string result = "";
   result += "(" + function_name + ")\n";
+
   for (int i = 0; i < n_vars; i++) {
     result += "@SP\n";
     result += "A=M\n";
@@ -369,63 +414,47 @@ string VMTranslator::vm_function(string function_name, int n_vars) {
 
 /** Generate Hack Assembly code for a VM call operation */
 string VMTranslator::vm_call(string function_name, int n_args) {
+  static int index = 0;
   string result = "";
 
-  static int index = 0;
+  string returnAddress = "RETURN_ADDRESS" + to_string(index);
 
-  string return_Address = "RETURN_ADDRESS" +  to_string(index);
-  result += "@" + return_Address + "\n";
+  result += "@" + returnAddress + "\n";
   result += "D=A\n";
   result += "@SP\n";
-  result += "AM=M+1\n";
-  result += "A=A-1\n";
+  result += "A=M\n";
   result += "M=D\n";
-
-  result += "@LCL\n";
-  result += "D=M\n";
   result += "@SP\n";
-  result += "AM=M+1\n";
-  result += "A=A-1\n";
-  result += "M=D\n";
+  result += "M=M+1\n";
 
-  result += "@ARG\n";
-  result += "D=M\n";
-  result += "@SP\n";
-  result += "AM=M+1\n";
-  result += "A=A-1\n";
-  result += "M=D\n";
+  string segments[] = {"LCL", "ARG", "THIS", "THAT"};
+
+  for (int i = 0; i < 4; i++) {
+    result += "@" + segments[i] + "\n";
+    result += "D=M\n";
+    result += "@SP\n";
+    result += "A=M\n";
+    result += "M=D\n";
+    result += "@SP\n";
+    result += "M=M+1\n";
+  }
 
   result += "@SP\n";
   result += "D=M\n";
-  result += "@5\n";
-  result += "D=D-A\n";
   result += "@" + to_string(n_args) + "\n";
   result += "D=D-A\n";
+  result += "@5\n";
+  result += "D=D-A\n";
   result += "@ARG\n";
   result += "M=D\n";
   result += "@SP\n";
   result += "D=M\n";
   result += "@LCL\n";
-  result += "M=D\n";
-
-  result += "@THIS\n";
-  result += "D=M\n";
-  result += "@SP\n";
-  result += "AM=M+1\n";
-  result += "A=A-1\n";
-  result += "M=D\n";
-
-  result += "@THAT\n";
-  result += "D=M\n";
-  result += "@SP\n";
-  result += "AM=M+1\n";
-  result += "A=A-1\n";
   result += "M=D\n";
 
   result += "@" + function_name + "\n";
   result += "0;JMP\n";
-  result += "(" + return_Address + ")\n";
-
+  result += "(" + returnAddress + ")\n";
   index++;
 
   return result;
@@ -447,46 +476,42 @@ string VMTranslator::vm_return() {
   result += "@R14\n";
   result += "M=D\n";
 
+  result += "@SP\n";
+  result += "AM=M-1\n";
+  result += "D=M\n";
+  result += "@ARG\n";
+  result += "A=M\n";
+  result += "M=D\n";
+
   result += "@ARG\n";
   result += "D=M+1\n";
   result += "@SP\n";
   result += "M=D\n";
 
-  result += "@SP\n";
-  result += "AM=M-1\n";
-  result += "D=M\n";
-  result += "@ARG";
-  result += "A=M\n";
-  result += "M=D\n";
-
   result += "@R13\n";
   result += "D=M-1\n";
-  result += "A=D\n";
-  result += "M=D\n";
+  result += "AM=D\n";
   result += "D=M\n";
   result += "@THAT\n";
   result += "M=D\n";
 
   result += "@R13\n";
   result += "D=M-1\n";
-  result += "A=D\n";
-  result += "M=D\n";
+  result += "AM=D\n";
   result += "D=M\n";
   result += "@THIS\n";
   result += "M=D\n";
 
   result += "@R13\n";
   result += "D=M-1\n";
-  result += "A=D\n";
-  result += "M=D\n";
+  result += "AM=D\n";
   result += "D=M\n";
   result += "@ARG\n";
   result += "M=D\n";
 
   result += "@R13\n";
   result += "D=M-1\n";
-  result += "A=D\n";
-  result += "M=D\n";
+  result += "AM=D\n";
   result += "D=M\n";
   result += "@LCL\n";
   result += "M=D\n";
