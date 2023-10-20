@@ -68,34 +68,34 @@ ParseTree* CompilerParser::compileClass() {
     return classTree;
 }
 
-std::vector<std::string> CompilerParser::getVarNames() {
-    // e.g. var int x,y;
-    std::vector<std::string> varNames;
+// std::vector<std::string> CompilerParser::getVarNames() {
+//     // e.g. var int x,y;
+//     std::vector<std::string> varNames;
 
-    // varName
-    varNames.push_back(current()->getValue());
-    next(); // advanceTokenIfPossible
+//     // varName
+//     varNames.push_back(current()->getValue());
+//     next(); // advanceTokenIfPossible
 
-    while (!have("symbol", ";")) {
-        // ,
-        if (have("symbol", ",")) {
-            next(); // advanceTokenIfPossible
-        }
+//     while (!have("symbol", ";")) {
+//         // ,
+//         if (have("symbol", ",")) {
+//             next(); // advanceTokenIfPossible
+//         }
 
-        // varName
-        varNames.push_back(current()->getValue());
-        next(); // advanceTokenIfPossible
-    }
+//         // varName
+//         varNames.push_back(current()->getValue());
+//         next(); // advanceTokenIfPossible
+//     }
 
-    // ;
-    if (have("symbol", ";")) {
-        next(); // advanceTokenIfPossible
-    } else {
-        throw ParseException();
-    }
+//     // ;
+//     if (have("symbol", ";")) {
+//         next(); // advanceTokenIfPossible
+//     } else {
+//         throw ParseException();
+//     }
 
-    return varNames;
-}
+//     return varNames;
+// }
 /**
  * Generates a parse tree for a static variable declaration or field declaration
  * @return a ParseTree
@@ -106,7 +106,7 @@ ParseTree* CompilerParser::compileClassVarDec() {
    * declaration
    * @return a ParseTree
    */
-  ParseTree* classVarDecTree = new ParseTree("ClassVarDec", "");
+     ParseTree* classVarDecTree = new ParseTree("ClassVarDec", "");
 
     while (have("keyword", "static") || have("keyword", "field")) {
         // variable symbol table kind
@@ -119,10 +119,29 @@ ParseTree* CompilerParser::compileClassVarDec() {
         classVarDecTree->addChild(current());
         next(); // advanceTokenIfPossible
 
-        // get all variable names for multiple variable declaration
-        std::vector<std::string> varNames = getVarNames();
-        for (const auto &varName : varNames) {
-            classVarDecTree->addChild(new ParseTree("VarName", varName));
+        // extracting variable names
+        while (true) {
+            if (have("identifier", "")) {
+                classVarDecTree->addChild(current());
+                next(); // advanceTokenIfPossible
+            } else {
+                break;
+            }
+
+            if (have("symbol", ",")) {
+                classVarDecTree->addChild(current());
+                next(); // advanceTokenIfPossible
+            } else {
+                break;
+            }
+        }
+
+        // ;
+        if (have("symbol", ";")) {
+            classVarDecTree->addChild(current());
+            next(); // advanceTokenIfPossible
+        } else {
+            throw ParseException();
         }
     }
 

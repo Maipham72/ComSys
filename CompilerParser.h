@@ -33,7 +33,7 @@ class CompilerParser {
         ParseTree* compileExpression();
         ParseTree* compileTerm();
         ParseTree* compileExpressionList();
-        std::vector<std::string> getVarNames();
+        //std::vector<std::string> getVarNames();
         
         void next();
         Token* current();
