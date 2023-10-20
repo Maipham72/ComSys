@@ -246,31 +246,44 @@ return NULL;
  * @return a ParseTree
  */
 ParseTree* CompilerParser::compileVarDec() {
-//   ParseTree* varDec = new ParseTree("varDec", "");
-//   if (have("keyword", "var")) {
-//     mustBe("keyword", "var");
-//   } else {
-//     throw ParseException();
-//   }
-//   if (have("keyword", "int")) {
-//     mustBe("keyword", "int");
-//   } else if (have("keyword", "char")) {
-//     mustBe("keyword", "char");
-//   } else if (have("keyword", "boolean")) {
-//     mustBe("keyword", "boolean");
-//   } else if (have("identifier", "")) {
-//     mustBe("identifier", "");
-//   } else {
-//     throw ParseException();
-//   }
-//   Token* varName = mustBe("identifier", "");
-//   while (have("symbol", ",")) {
-//     mustBe("symbol", ",");
-//     Token* varName = mustBe("identifier", "");
-//   }
-//   mustBe("symbol", ";");
-//   varDec->addChild(varName);
-return NULL;
+    ParseTree* varDecTree = new ParseTree("VarDec", "");
+
+    while (have("keyword", "var")) {
+        // "var" keyword
+        varDecTree->addChild(current());
+        next(); // Advance to the next token
+
+        // Variable data type
+        varDecTree->addChild(current());
+        next(); // Advance to the next token
+
+        // Get all variable names for multiple variable declaration
+        while (true) {
+            if (have("identifier", "")) {
+                varDecTree->addChild(current());
+                next(); // Advance to the next token
+            } else {
+                break;
+            }
+
+            if (have("symbol", ",")) {
+                varDecTree->addChild(current());
+                next(); // Advance to the next token
+            } else {
+                break;
+            }
+        }
+
+        // Semicolon ";"
+        if (have("symbol", ";")) {
+            varDecTree->addChild(current());
+            next(); // Advance to the next token
+        } else {
+            throw ParseException();
+        }
+    }
+
+    return varDecTree;
 }
 
 /**
@@ -278,30 +291,23 @@ return NULL;
  * @return a ParseTree
  */
 ParseTree* CompilerParser::compileStatements() {
-//   ParseTree* statements = new ParseTree("statements", "");
-//   while (have("keyword", "let") || have("keyword", "if") ||
-//          have("keyword", "while") || have("keyword", "do") ||
-//          have("keyword", "return")) {
-//     if (have("keyword", "let")) {
-//       ParseTree* letTree = compileLet();
-//       statements->addChild(letTree);
-//     } else if (have("keyword", "if")) {
-//       ParseTree* ifTree = compileIf();
-//       statements->addChild(ifTree);
-//     } else if (have("keyword", "while")) {
-//       ParseTree* whileTree = compileWhile();
-//       statements->addChild(whileTree);
-//     } else if (have("keyword", "do")) {
-//       ParseTree* doTree = compileDo();
-//       statements->addChild(doTree);
-//     } else if (have("keyword", "return")) {
-//       ParseTree* returnTree = compileReturn();
-//       statements->addChild(returnTree);
-//     } else {
-//       throw ParseException();
-//     }
-//   }
-return NULL;
+    ParseTree* statements = new ParseTree("statements", "");
+
+    while (!have("symbol", "}")) {
+        if (have("keyword", "return")) {
+            statements->addChild(compileReturn());
+        } else if (have("keyword", "let")) {
+            statements->addChild(compileLet());
+        } else if (have("keyword", "while")) {
+            statements->addChild(compileWhile());
+        } else if (have("keyword", "if")) {
+            statements->addChild(compileIf());
+        } else if (have("keyword", "do")) {
+            statements->addChild(compileDo());
+        }
+    }
+
+    return statements;
 }
 
 /**
@@ -309,20 +315,70 @@ return NULL;
  * @return a ParseTree
  */
 ParseTree* CompilerParser::compileLet() {
-//   ParseTree* letTree = new ParseTree("letStatement", "");
-//   mustBe("keyword", "let");
-//   Token* varName = mustBe("identifier", "");
-//   if (have("symbol", "[")) {
-//     mustBe("symbol", "[");
-//     ParseTree* expression = compileExpression();
-//     mustBe("symbol", "]");
-//     letTree->addChild(expression);
-//   }
-//   mustBe("symbol", "=");
-//   ParseTree* expression = compileExpression();
-//   mustBe("symbol", ";");
-//   letTree->addChild(expression);
-return NULL;
+    ParseTree* letTree = new ParseTree("LetStatement", "");
+
+    if (have("keyword", "let")) {
+        letTree->addChild(current());
+        next(); // advanceTokenIfPossible
+
+        if (have("identifier", "")) {
+            letTree->addChild(current());
+            next(); // advanceTokenIfPossible
+
+            if (have("symbol", "[")) {
+                letTree->addChild(current());
+                next(); // advanceTokenIfPossible
+
+                ParseTree* expressionTree = compileExpression();
+                letTree->addChild(expressionTree);
+
+                if (have("symbol", "]")) {
+                    letTree->addChild(current());
+                    next(); // advanceTokenIfPossible
+                } else {
+                    throw ParseException();
+                }
+
+                if (have("symbol", "=")) {
+                    letTree->addChild(current());
+                    next(); // advanceTokenIfPossible
+
+                    expressionTree = compileExpression();
+                    letTree->addChild(expressionTree);
+
+                    if (have("symbol", ";")) {
+                        letTree->addChild(current());
+                        next(); // advanceTokenIfPossible
+                    } else {
+                        throw ParseException();
+                    }
+                } else {
+                    throw ParseException();
+                }
+            } else if (have("symbol", "=")) {
+                letTree->addChild(current());
+                next(); // advanceTokenIfPossible
+
+                ParseTree* expressionTree = compileExpression();
+                letTree->addChild(expressionTree);
+
+                if (have("symbol", ";")) {
+                    letTree->addChild(current());
+                    next(); // advanceTokenIfPossible
+                } else {
+                    throw ParseException();
+                }
+            } else {
+                throw ParseException();
+            }
+        } else {
+            throw ParseException();
+        }
+    } else {
+        throw ParseException();
+    }
+
+    return letTree;
 }
 
 /**
