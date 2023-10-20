@@ -32,7 +32,7 @@ ParseTree* CompilerParser::compileProgram() {
  * @return a ParseTree
  */
 ParseTree* CompilerParser::compileClass() {
-    ParseTree* classTree = new ParseTree("Class", "");
+    ParseTree* classTree = new ParseTree("class", "");
 
     if (have("keyword", "class")) {
         classTree->addChild(current());
@@ -106,7 +106,7 @@ ParseTree* CompilerParser::compileClassVarDec() {
    * declaration
    * @return a ParseTree
    */
-     ParseTree* classVarDecTree = new ParseTree("ClassVarDec", "");
+     ParseTree* classVarDecTree = new ParseTree("classVarDec", "");
 
     while (have("keyword", "static") || have("keyword", "field")) {
         // variable symbol table kind
@@ -153,38 +153,48 @@ ParseTree* CompilerParser::compileClassVarDec() {
  * @return a ParseTree
  */
 ParseTree* CompilerParser::compileSubroutine() {
-//   ParseTree* subroutine = new ParseTree("subroutine", "");
-//   if (have("keyword", "constructor")) {
-//     mustBe("keyword", "constructor");
-//   } else if (have("keyword", "function")) {
-//     mustBe("keyword", "function");
-//   } else if (have("keyword", "method")) {
-//     mustBe("keyword", "method");
-//   } else {
-//     throw ParseException();
-//   }
-//   if (have("keyword", "void")) {
-//     mustBe("keyword", "void");
-//   } else if (have("keyword", "int")) {
-//     mustBe("keyword", "int");
-//   } else if (have("keyword", "char")) {
-//     mustBe("keyword", "char");
-//   } else if (have("keyword", "boolean")) {
-//     mustBe("keyword", "boolean");
-//   } else if (have("identifier", "")) {
-//     mustBe("identifier", "");
-//   } else {
-//     throw ParseException();
-//   }
-//   Token* subroutineName = mustBe("identifier", "");
-//   mustBe("symbol", "(");
-//   ParseTree* parameterList = compileParameterList();
-//   mustBe("symbol", ")");
-//   ParseTree* subroutineBody = compileSubroutineBody();
-//   subroutine->addChild(subroutineName);
-//   subroutine->addChild(parameterList);
-//   subroutine->addChild(subroutineBody);
-return NULL;
+    ParseTree* subroutine = new ParseTree("subroutine", "");
+
+    // Parsing subroutine type
+    if (have("keyword", "constructor")) {
+        mustBe("keyword", "constructor");
+    } else if (have("keyword", "function")) {
+        mustBe("keyword", "function");
+    } else if (have("keyword", "method")) {
+        mustBe("keyword", "method");
+    } else {
+        throw ParseException();
+    }
+
+    // Parsing return type
+    if (have("keyword", "void")) {
+        mustBe("keyword", "void");
+    } else if (have("keyword", "int")) {
+        mustBe("keyword", "int");
+    } else if (have("keyword", "char")) {
+        mustBe("keyword", "char");
+    } else if (have("keyword", "boolean")) {
+        mustBe("keyword", "boolean");
+    } else if (have("identifier", "")) {
+        mustBe("identifier", "");
+    } else {
+        throw ParseException();
+    }
+
+    Token* subroutineName = mustBe("identifier", "");
+    mustBe("symbol", "(");
+    // Parse parameter list
+    ParseTree* parameterList = compileParameterList();
+    mustBe("symbol", ")");
+    // Parse subroutine body
+    ParseTree* subroutineBody = compileSubroutineBody();
+
+    // Adding children to the parse tree
+    subroutine->addChild(subroutineName);
+    subroutine->addChild(parameterList);
+    subroutine->addChild(subroutineBody);
+
+    return subroutine;
 }
 
 /**
