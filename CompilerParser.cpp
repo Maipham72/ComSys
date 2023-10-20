@@ -165,7 +165,7 @@ ParseTree* CompilerParser::compileSubroutine() {
 //   subroutine->addChild(subroutineName);
 //   subroutine->addChild(parameterList);
 //   subroutine->addChild(subroutineBody);
-//   return subroutine;
+return NULL;
 }
 
 /**
@@ -202,7 +202,7 @@ ParseTree* CompilerParser::compileParameterList() {
 //     Token* varName = mustBe("identifier", "");
 //   }
 //   parameterList->addChild(varName);
-//   return parameterList;
+return NULL;
 }
 
 /**
@@ -217,7 +217,7 @@ ParseTree* CompilerParser::compileSubroutineBody() {
 //   mustBe("symbol", "}");
 //   subroutineBody->addChild(varDecs);
 //   subroutineBody->addChild(statements);
-//   return subroutineBody;
+return NULL;
 }
 
 /**
@@ -249,7 +249,7 @@ ParseTree* CompilerParser::compileVarDec() {
 //   }
 //   mustBe("symbol", ";");
 //   varDec->addChild(varName);
-//   return varDec;
+return NULL;
 }
 
 /**
@@ -280,7 +280,7 @@ ParseTree* CompilerParser::compileStatements() {
 //       throw ParseException();
 //     }
 //   }
-//   return statements;
+return NULL;
 }
 
 /**
@@ -301,7 +301,7 @@ ParseTree* CompilerParser::compileLet() {
 //   ParseTree* expression = compileExpression();
 //   mustBe("symbol", ";");
 //   letTree->addChild(expression);
-//   return letTree;
+return NULL;
 }
 
 /**
@@ -325,7 +325,7 @@ ParseTree* CompilerParser::compileIf() {
 //   }
 //   ifTree->addChild(expression);
 //   ifTree->addChild(statements);
-//   return ifTree;
+return NULL;
 }
 
 /**
@@ -343,7 +343,7 @@ ParseTree* CompilerParser::compileWhile() {
 //   mustBe("symbol", "}");
 //   whileTree->addChild(expression);
 //   whileTree->addChild(statements);
-//   return whileTree;
+return NULL;
 }
 
 /**
@@ -364,7 +364,7 @@ ParseTree* CompilerParser::compileDo() {
 //   mustBe("symbol", ";");
 //   doTree->addChild(subroutineName);
 //   doTree->addChild(expressionList);
-//   return doTree;
+return NULL;
 }
 
 /**
