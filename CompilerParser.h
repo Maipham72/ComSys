@@ -3,6 +3,8 @@
 
 #include <list>
 #include <exception>
+#include <vector>
+
 
 #include "ParseTree.h"
 #include "Token.h"
@@ -31,6 +33,7 @@ class CompilerParser {
         ParseTree* compileExpression();
         ParseTree* compileTerm();
         ParseTree* compileExpressionList();
+        std::vector<std::string> getVarNames();
         
         void next();
         Token* current();
