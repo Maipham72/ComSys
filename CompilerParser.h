@@ -9,6 +9,8 @@
 
 class CompilerParser {
     public:
+        std::list<Token*> tokens;
+
         CompilerParser(std::list<Token*> tokens);
 
         ParseTree* compileProgram();
@@ -34,6 +36,7 @@ class CompilerParser {
         Token* current();
         bool have(std::string expectedType, std::string expectedValue);
         Token* mustBe(std::string expectedType, std::string expectedValue);
+
 };
 
 class ParseException : public std::exception {

@@ -6,13 +6,17 @@
  * @param tokens A linked list of tokens to be parsed
  */
 CompilerParser::CompilerParser(std::list<Token*> tokens) {
+    
 }
 
 /**
  * Generates a parse tree for a single program
  * @return a ParseTree
  */
+
+
 ParseTree* CompilerParser::compileProgram() {
+    ParseTree* programTree = new ParseTree("program", "");
     return NULL;
 }
 
@@ -20,7 +24,7 @@ ParseTree* CompilerParser::compileProgram() {
  * Generates a parse tree for a single class
  * @return a ParseTree
  */
-ParseTree* CompilerParser::compileClass() {
+ParseTree* CompilerParser::compileClass() {  
     return NULL;
 }
 
@@ -29,6 +33,7 @@ ParseTree* CompilerParser::compileClass() {
  * @return a ParseTree
  */
 ParseTree* CompilerParser::compileClassVarDec() {
+
     return NULL;
 }
 
@@ -140,6 +145,10 @@ ParseTree* CompilerParser::compileExpressionList() {
  * Advance to the next token
  */
 void CompilerParser::next(){
+    if (tokens.empty()==false){
+        tokens.pop_front();
+    }
+
     return;
 }
 
@@ -148,7 +157,12 @@ void CompilerParser::next(){
  * @return the Token
  */
 Token* CompilerParser::current(){
-    return NULL;
+    if (tokens.empty()==false){
+        return tokens.front();
+    }
+    else {
+        return NULL;
+    }
 }
 
 /**
@@ -156,6 +170,10 @@ Token* CompilerParser::current(){
  * @return true if a match, false otherwise
  */
 bool CompilerParser::have(std::string expectedType, std::string expectedValue){
+    Token* currToken = current();
+    if (currToken != nullptr && currToken->getType() == expectedType && currToken->getValue() == expectedValue){
+        return true;
+    }
     return false;
 }
 
@@ -165,6 +183,14 @@ bool CompilerParser::have(std::string expectedType, std::string expectedValue){
  * @return the current token before advancing
  */
 Token* CompilerParser::mustBe(std::string expectedType, std::string expectedValue){
+    Token* currToken = current();
+    if (currToken != nullptr && currToken->getType() == expectedType && currToken->getValue() == expectedValue){
+        next();
+        return currToken;
+    }
+    else {
+        throw ParseException();
+    }
     return NULL;
 }
 
