@@ -6,7 +6,7 @@
  * @param tokens A linked list of tokens to be parsed
  */
 CompilerParser::CompilerParser(std::list<Token*> tokens) {
-    
+    this->tokens = tokens;
 }
 
 /**
@@ -16,16 +16,28 @@ CompilerParser::CompilerParser(std::list<Token*> tokens) {
 
 
 ParseTree* CompilerParser::compileProgram() {
-    ParseTree* programTree = new ParseTree("program", "");
-    return NULL;
+    ParseTree* program = new ParseTree("program","");
+    ParseTree* classTree = compileClass();
+    program->addChild(classTree);
+    return program;
 }
 
 /**
  * Generates a parse tree for a single class
  * @return a ParseTree
  */
-ParseTree* CompilerParser::compileClass() {  
-    return NULL;
+ParseTree* CompilerParser::compileClass() {
+    ParseTree* classTree = new ParseTree("class","");
+    mustBe("keyword","class");
+    Token* className = mustBe("identifier","");
+    mustBe("symbol","{");
+    ParseTree* classVarDecs = compileClassVarDec();
+    ParseTree* subroutines = compileSubroutine();
+    mustBe("symbol","}");
+    classTree->addChild(className);
+    classTree->addChild(classVarDecs);
+    classTree->addChild(subroutines);
+    return classTree;
 }
 
 /**
@@ -33,8 +45,47 @@ ParseTree* CompilerParser::compileClass() {
  * @return a ParseTree
  */
 ParseTree* CompilerParser::compileClassVarDec() {
+    /**
+ * Generates a parse tree for a static variable declaration or field declaration
+ * @return a ParseTree
+ */
 
-    return NULL;
+    ParseTree* classVarDec = new ParseTree("classVarDec","");
+    if (have("keyword","static")){
+        mustBe("keyword","static");
+    }
+    else if (have("keyword","field")){
+        mustBe("keyword","field");
+    }
+    else {
+        throw ParseException();
+    }
+    Token* type = mustBe("keyword","int");
+    if (have("keyword","int")){
+        mustBe("keyword","int");
+    }
+    else if (have("keyword","char")){
+        mustBe("keyword","char");
+    }
+    else if (have("keyword","boolean")){
+        mustBe("keyword","boolean");
+    }
+    else if (have("identifier","")){
+        mustBe("identifier","");
+    }
+    else {
+        throw ParseException();
+    }
+    Token* varName = mustBe("identifier","");
+    while (have("symbol",",")){
+        mustBe("symbol",",");
+        Token* varName = mustBe("identifier","");
+    }
+    mustBe("symbol",";");
+    classVarDec->addChild(type);
+    classVarDec->addChild(varName);
+    return classVarDec;
+
 }
 
 /**
