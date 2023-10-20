@@ -200,9 +200,9 @@ ParseTree* CompilerParser::compileSubroutine() {
  * @return a ParseTree
  */
 ParseTree* CompilerParser::compileParameterList() {
-    ParseTree* parameterList = new ParseTree("parameterList", "");
+   ParseTree* parameterList = new ParseTree("parameterList", "");
 
-    while (!have("symbol", ")")) {
+    while (current() && !have("symbol", ")")) {
         // Process comma if encountered
         if (have("symbol", ",")) {
             next(); // advanceTokenIfPossible
@@ -214,9 +214,13 @@ ParseTree* CompilerParser::compileParameterList() {
         next(); // advanceTokenIfPossible
 
         // Parse variable name
-        std::string varName = current()->getValue();
-        parameterList->addChild(new ParseTree("varName", varName));
-        next(); // advanceTokenIfPossible
+        if (current() && have("identifier", "")) {
+            std::string varName = current()->getValue();
+            parameterList->addChild(new ParseTree("varName", varName));
+            next(); // advanceTokenIfPossible
+        } else {
+            throw ParseException();
+        }
     }
 
     return parameterList;
