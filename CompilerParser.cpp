@@ -51,8 +51,6 @@ ParseTree* CompilerParser::compileClass() {
         next(); 
     }
 
-    classTree->addChild(compileClassVarDec());
-
     // class level subroutines (methods, constructors, functions)
     while (!(have("symbol", "}"))) {
         classTree->addChild(compileSubroutine());
@@ -202,35 +200,26 @@ ParseTree* CompilerParser::compileSubroutine() {
  * @return a ParseTree
  */
 ParseTree* CompilerParser::compileParameterList() {
-//   ParseTree* parameterList = new ParseTree("parameterList", "");
-//   if (have("keyword", "int")) {
-//     mustBe("keyword", "int");
-//   } else if (have("keyword", "char")) {
-//     mustBe("keyword", "char");
-//   } else if (have("keyword", "boolean")) {
-//     mustBe("keyword", "boolean");
-//   } else if (have("identifier", "")) {
-//     mustBe("identifier", "");
-//   } else {
-//     throw ParseException();
-//   }
-//   Token* varName = mustBe("identifier", "");
-//   while (have("symbol", ",")) {
-//     mustBe("symbol", ",");
-//     if (have("keyword", "int")) {
-//       mustBe("keyword", "int");
-//     } else if (have("keyword", "char")) {
-//       mustBe("keyword", "char");
-//     } else if (have("keyword", "boolean")) {
-//       mustBe("keyword", "boolean");
-//     } else if (have("identifier", "")) {
-//       mustBe("identifier", "");
-//     } else {
-//       throw ParseException();
-//     }
-//     Token* varName = mustBe("identifier", "");
-//   }
-//   parameterList->addChild(varName);
+    ParseTree* parameterList = new ParseTree("parameterList", "");
+
+    while (!have("symbol", ")")) {
+        // Process comma if encountered
+        if (have("symbol", ",")) {
+            next(); // advanceTokenIfPossible
+        }
+
+        // Parse variable type
+        std::string varType = current()->getValue();
+        parameterList->addChild(new ParseTree("varType", varType));
+        next(); // advanceTokenIfPossible
+
+        // Parse variable name
+        std::string varName = current()->getValue();
+        parameterList->addChild(new ParseTree("varName", varName));
+        next(); // advanceTokenIfPossible
+    }
+
+    return parameterList;
 return NULL;
 }
 
