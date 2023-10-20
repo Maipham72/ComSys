@@ -220,7 +220,6 @@ ParseTree* CompilerParser::compileParameterList() {
     }
 
     return parameterList;
-return NULL;
 }
 
 /**
