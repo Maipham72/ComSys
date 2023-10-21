@@ -37,23 +37,34 @@ ParseTree* CompilerParser::compileClass() {
     if (have("keyword", "class")) {
         classTree->addChild(current());
         next(); // advanceTokenIfPossible
+    } else {
+        throw ParseException();
     }
 
     if (current()->getType() == "identifier") {
         std::string className = current()->getValue();
         classTree->addChild(current());
         next(); // advanceTokenIfPossible
+    } else {
+        throw ParseException();
     }
 
     // {
     if (have("symbol", "{")) {
         classTree->addChild(current());
         next(); 
+    } else {
+        throw ParseException();
     }
 
     // class level subroutines (methods, constructors, functions)
     while (!(have("symbol", "}"))) {
-        classTree->addChild(compileSubroutine());
+        ParseTree* subroutineTree = compileSubroutine();
+        if (subroutineTree != NULL) {
+            classTree->addChild(subroutineTree);
+        } else {
+            throw ParseException();
+        }
     }
 
     if (have("symbol", "}")) {
