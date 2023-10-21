@@ -51,7 +51,7 @@ ParseTree* CompilerParser::compileClass() {
         throw ParseException();
     }
 
-    while (current()->getType() == "keyword" && (current()->getValue() == "static" || current()->getValue() == "field")) {
+    while (current() != nullptr && !(have("symbol", "}"))) {
         ParseTree* classVarDec = compileClassVarDec();
         if (classVarDec != nullptr) {
             classTree->addChild(classVarDec);
@@ -66,6 +66,7 @@ ParseTree* CompilerParser::compileClass() {
     } else {
         throw ParseException();
     }
+
     return classTree;
 }
 
@@ -80,7 +81,7 @@ ParseTree* CompilerParser::compileClassVarDec() {
    * declaration
    * @return a ParseTree
    */
-     ParseTree* classVarDecTree = new ParseTree("classVarDec", "");
+    ParseTree* classVarDecTree = new ParseTree("classVarDec", "");
 
     if (have("keyword", "static") || have("keyword", "field")) {
         classVarDecTree->addChild(current());
