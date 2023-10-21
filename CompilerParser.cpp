@@ -14,16 +14,12 @@ CompilerParser::CompilerParser(std::list<Token*> tokens) {
  */
 
 ParseTree* CompilerParser::compileProgram() {
-  ParseTree* program = new ParseTree("class", "");
-
     if (have("keyword", "class")) {
         ParseTree* classTree = compileClass();
-        program->addChild(classTree);
+        return classTree;
     } else {
         throw ParseException();
     }
-
-    return program;
 
 }
 
@@ -79,34 +75,6 @@ ParseTree* CompilerParser::compileClass() {
     return classTree;
 }
 
-// std::vector<std::string> CompilerParser::getVarNames() {
-//     // e.g. var int x,y;
-//     std::vector<std::string> varNames;
-
-//     // varName
-//     varNames.push_back(current()->getValue());
-//     next(); // advanceTokenIfPossible
-
-//     while (!have("symbol", ";")) {
-//         // ,
-//         if (have("symbol", ",")) {
-//             next(); // advanceTokenIfPossible
-//         }
-
-//         // varName
-//         varNames.push_back(current()->getValue());
-//         next(); // advanceTokenIfPossible
-//     }
-
-//     // ;
-//     if (have("symbol", ";")) {
-//         next(); // advanceTokenIfPossible
-//     } else {
-//         throw ParseException();
-//     }
-
-//     return varNames;
-// }
 /**
  * Generates a parse tree for a static variable declaration or field declaration
  * @return a ParseTree
@@ -120,8 +88,8 @@ ParseTree* CompilerParser::compileClassVarDec() {
         ParseTree* classVarDecTree = new ParseTree("classVarDec", "");
 
     // Add keyword
-    if (have("keyword", "static") || have("keyword", "field")) {
-        classVarDecTree->addChild(new ParseTree("keyword", current()->getValue()));
+    if (have("keyword", "static")) {
+        classVarDecTree->addChild(current());
         next(); // Advance to the next token
     } else {
         throw ParseException(); // Or handle the unexpected case accordingly
@@ -136,17 +104,6 @@ ParseTree* CompilerParser::compileClassVarDec() {
     }
 
     // Extract variable names
-    while (!have("symbol", ";")) {
-        if (have("identifier", "")) {
-            classVarDecTree->addChild(new ParseTree("identifier", current()->getValue()));
-            next(); // Advance to the next token
-        } else if (have("symbol", ",")) {
-            classVarDecTree->addChild(new ParseTree("symbol", current()->getValue()));
-            next(); // Advance to the next token
-        } else {
-            throw ParseException(); // Or handle the unexpected case accordingly
-        }
-    }
 
     // Add semicolon
     if (have("symbol", ";")) {
