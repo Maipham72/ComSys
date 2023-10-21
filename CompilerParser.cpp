@@ -539,27 +539,64 @@ ParseTree* CompilerParser::compileWhile() {
  * @return a ParseTree
  */
 ParseTree* CompilerParser::compileDo() {
-//   ParseTree* doTree = new ParseTree("doStatement", "");
-//   mustBe("keyword", "do");
-//   Token* subroutineName = mustBe("identifier", "");
-//   if (have("symbol", ".")) {
-//     mustBe("symbol", ".");
-//     Token* subroutineName = mustBe("identifier", "");
-//   }
-//   mustBe("symbol", "(");
-//   ParseTree* expressionList = compileExpressionList();
-//   mustBe("symbol", ")");
-//   mustBe("symbol", ";");
-//   doTree->addChild(subroutineName);
-//   doTree->addChild(expressionList);
-return NULL;
+    ParseTree* doStatementTree = new ParseTree("doStatement", "");
+
+    if (have("keyword", "do")) {
+        doStatementTree->addChild(current());
+        next(); // Advance to the next token
+    } else {
+        throw ParseException();
+    }
+
+    // Parse the subroutine call
+    ParseTree* expressionTree = compileExpression();
+    if (expressionTree != nullptr) {
+        doStatementTree->addChild(expressionTree);
+    } else {
+        throw ParseException();
+    }
+
+    if (have("symbol", ";")) {
+        doStatementTree->addChild(current());
+        next(); // Advance to the next token
+    } else {
+        throw ParseException();
+    }
+
+    return doStatementTree;
 }
 
 /**
  * Generates a parse tree for a return statement
  * @return a ParseTree
  */
-ParseTree* CompilerParser::compileReturn() { return NULL; }
+ParseTree* CompilerParser::compileReturn() {
+        ParseTree* returnStatementTree = new ParseTree("returnStatement", "");
+
+    if (have("keyword", "return")) {
+        returnStatementTree->addChild(current());
+        next(); // Advance to the next token
+    } else {
+        throw ParseException();
+    }
+
+    // Parse the expression
+    ParseTree* expressionTree = compileExpression();
+    if (expressionTree != nullptr) {
+        returnStatementTree->addChild(expressionTree);
+    } else {
+        throw ParseException();
+    }
+
+    if (have("symbol", ";")) {
+        returnStatementTree->addChild(current());
+        next(); // Advance to the next token
+    } else {
+        throw ParseException();
+    }
+
+    return returnStatementTree;
+}
 
 /**
  * Generates a parse tree for an expression
