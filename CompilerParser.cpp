@@ -31,34 +31,56 @@ ParseTree* CompilerParser::compileClass() {
      ParseTree* classTree = new ParseTree("class", "");
 
     if (have("keyword", "class")) {
-        classTree->addChild(mustBe("keyword", "class"));
+        classTree->addChild(current());
+        next(); // advance
     } else {
         throw ParseException();
     }
 
-    if (current()->getType() == "identifier") {
-        classTree->addChild(mustBe("identifier", current()->getValue()));
+     if (current()->getType() == "identifier") {
+        std::string identifierName = current()->getValue();
+        classTree->addChild(current());
+        next(); // advanceTokenIfPossible
     } else {
         throw ParseException();
     }
 
     if (have("symbol", "{")) {
-        classTree->addChild(mustBe("symbol", "{"));
+        std::string symbol = current()->getValue();
+        classTree->addChild(current());
+        next(); 
     } else {
         throw ParseException();
     }
 
-    while (!have("symbol", "}")) {
-        ParseTree* classVarDec = compileClassVarDec();
-        if (classVarDec != nullptr) {
-            classTree->addChild(classVarDec);
+    // if (have("symbol", "{")) {
+    //     classTree->addChild(mustBe("symbol", "{"));
+    // } else {
+    //     throw ParseException();
+    // }
+
+    while(current()->getType() == "keyword" && (current()->getValue() == "static" || current()->getValue() == "field")) {
+         ParseTree* classVarDec = compileClassVarDec();
+         if (classVarDec != nullptr) {
+             classTree->addChild(classVarDec);
+         } else {
+             throw ParseException();
+         }
+     }
+
+    while(current()->getType() == "keyword" && (current()->getValue() == "constructor" || current()->getValue() == "function" || current()->getValue() == "method")) {
+        ParseTree* subroutine = compileSubroutine();
+        if (subroutine != nullptr) {
+            classTree->addChild(subroutine);
         } else {
             throw ParseException();
         }
     }
 
     if (have("symbol", "}")) {
-        classTree->addChild(mustBe("symbol", "}"));
+        std::string cSymbol = current()->getValue();
+        classTree->addChild(current());
+        next(); 
     } else {
         throw ParseException();
     }
@@ -77,39 +99,61 @@ ParseTree* CompilerParser::compileClassVarDec() {
    * declaration
    * @return a ParseTree
    */
-     ParseTree* classVarDecTree = new ParseTree("classVarDec", "");
+   ParseTree* classVarDecTree = new ParseTree("classVarDec", "");
 
     if (have("keyword", "static") || have("keyword", "field")) {
-        classVarDecTree->addChild(mustBe("keyword", current()->getValue()));
+        classVarDecTree->addChild(current());
+        next();
     } else {
         throw ParseException();
     }
 
     if (current()->getType() == "identifier") {
-        classVarDecTree->addChild(mustBe("identifier", current()->getValue()));
+        std::string identifierName = current()->getValue();
+        classVarDecTree->addChild(current());
+        next(); // advanceTokenIfPossible
     } else {
         throw ParseException();
     }
 
-    while (true) {
+    while (current()->getType() == "symbol" && current()->getValue() == ",") {
+        classVarDecTree->addChild(current());
+        next(); // advanceTokenIfPossible
+
         if (current()->getType() == "identifier") {
-            classVarDecTree->addChild(mustBe("identifier", current()->getValue()));
+            std::string identifierName = current()->getValue();
+            classVarDecTree->addChild(current());
+            next(); // advanceTokenIfPossible
         } else {
             throw ParseException();
         }
-
-        if (have("symbol", ",")) {
-            classVarDecTree->addChild(mustBe("symbol", ","));
-        } else {
-            break;
-        }
     }
 
-    if (have("symbol", ";")) {
-        classVarDecTree->addChild(mustBe("symbol", ";"));
+    if (have("symbol", "}")) {
+        std::string cSymbol = current()->getValue();
+        classVarDecTree->addChild(current());
+        next(); 
     } else {
         throw ParseException();
     }
+
+    
+
+    // while (true) {
+    //     if (have("symbol", ";")) {
+    //         classVarDecTree->addChild(mustBe("symbol", ";"));
+    //         break;
+    //     } else if (have("symbol", ",")) {
+    //         classVarDecTree->addChild(mustBe("symbol", ","));
+    //         if (current()->getType() == "identifier") {
+    //             classVarDecTree->addChild(mustBe("identifier", current()->getValue()));
+    //         } else {
+    //             throw ParseException();
+    //         }
+    //     } else {
+    //         throw ParseException();
+    //     }
+    // }
 
     return classVarDecTree;
 }
