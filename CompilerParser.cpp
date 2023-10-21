@@ -28,36 +28,29 @@ ParseTree* CompilerParser::compileProgram() {
  * @return a ParseTree
  */
 ParseTree* CompilerParser::compileClass() {
-    ParseTree* classTree = new ParseTree("class", "");
+     ParseTree* classTree = new ParseTree("class", "");
 
     if (have("keyword", "class")) {
-        classTree->addChild(current());
-        next(); // advance
+        classTree->addChild(mustBe("keyword", "class"));
     } else {
         throw ParseException();
     }
 
     if (current()->getType() == "identifier") {
-        std::string identifierName = current()->getValue();
-        classTree->addChild(current());
-        next(); // advanceTokenIfPossible
+        classTree->addChild(mustBe("identifier", current()->getValue()));
     } else {
         throw ParseException();
     }
 
-    // {
     if (have("symbol", "{")) {
-        std::string symbol = current()->getValue();
-        classTree->addChild(current());
-        next(); 
+        classTree->addChild(mustBe("symbol", "{"));
     } else {
         throw ParseException();
     }
 
-    // class level subroutines (methods, constructors, functions)
-    while (!(have("symbol", "}"))) {
+    while (!have("symbol", "}")) {
         ParseTree* classVarDec = compileClassVarDec();
-        if (classVarDec != NULL) {
+        if (classVarDec != nullptr) {
             classTree->addChild(classVarDec);
         } else {
             throw ParseException();
@@ -65,15 +58,14 @@ ParseTree* CompilerParser::compileClass() {
     }
 
     if (have("symbol", "}")) {
-        std::string cSymbol = current()->getValue();
-        classTree->addChild(current());
-        next(); 
+        classTree->addChild(mustBe("symbol", "}"));
     } else {
         throw ParseException();
     }
 
     return classTree;
 }
+
 
 /**
  * Generates a parse tree for a static variable declaration or field declaration
@@ -85,32 +77,38 @@ ParseTree* CompilerParser::compileClassVarDec() {
    * declaration
    * @return a ParseTree
    */
-        ParseTree* classVarDecTree = new ParseTree("classVarDec", "");
+     ParseTree* classVarDecTree = new ParseTree("classVarDec", "");
 
-    // Add keyword
-    if (have("keyword", "static")) {
-        classVarDecTree->addChild(current());
-        next(); // Advance to the next token
+    if (have("keyword", "static") || have("keyword", "field")) {
+        classVarDecTree->addChild(mustBe("keyword", current()->getValue()));
     } else {
-        throw ParseException(); // Or handle the unexpected case accordingly
+        throw ParseException();
     }
 
-    // Add variable data type
-    if (current()->getType() == "keyword" || current()->getType() == "identifier") {
-        classVarDecTree->addChild(new ParseTree(current()->getType(), current()->getValue()));
-        next(); // Advance to the next token
+    if (current()->getType() == "identifier") {
+        classVarDecTree->addChild(mustBe("identifier", current()->getValue()));
     } else {
-        throw ParseException(); // Or handle the unexpected case accordingly
+        throw ParseException();
     }
 
-    // Extract variable names
+    while (true) {
+        if (current()->getType() == "identifier") {
+            classVarDecTree->addChild(mustBe("identifier", current()->getValue()));
+        } else {
+            throw ParseException();
+        }
 
-    // Add semicolon
+        if (have("symbol", ",")) {
+            classVarDecTree->addChild(mustBe("symbol", ","));
+        } else {
+            break;
+        }
+    }
+
     if (have("symbol", ";")) {
-        classVarDecTree->addChild(new ParseTree("symbol", current()->getValue()));
-        next(); // Advance to the next token
+        classVarDecTree->addChild(mustBe("symbol", ";"));
     } else {
-        throw ParseException(); // Or handle the unexpected case accordingly
+        throw ParseException();
     }
 
     return classVarDecTree;
