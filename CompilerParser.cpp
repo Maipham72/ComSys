@@ -14,11 +14,13 @@ CompilerParser::CompilerParser(std::list<Token*> tokens) {
  */
 
 ParseTree* CompilerParser::compileProgram() {
-  ParseTree* program = new ParseTree("program", "");
+  ParseTree* program = new ParseTree("", "");
 
     if (have("keyword", "class")) {
         ParseTree* classTree = compileClass();
         program->addChild(classTree);
+    } else if (have("keyword", "static") || have("keyword", "int") || have("identifier", "a") || have("symbol", ";")) {
+        throw ParseException();
     } else {
         throw ParseException();
     }
