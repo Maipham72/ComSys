@@ -139,21 +139,21 @@ ParseTree* CompilerParser::compileClassVarDec() {
 
     
 
-    // while (true) {
-    //     if (have("symbol", ";")) {
-    //         classVarDecTree->addChild(mustBe("symbol", ";"));
-    //         break;
-    //     } else if (have("symbol", ",")) {
-    //         classVarDecTree->addChild(mustBe("symbol", ","));
-    //         if (current()->getType() == "identifier") {
-    //             classVarDecTree->addChild(mustBe("identifier", current()->getValue()));
-    //         } else {
-    //             throw ParseException();
-    //         }
-    //     } else {
-    //         throw ParseException();
-    //     }
-    // }
+    while (true) {
+        if (have("symbol", ";")) {
+            classVarDecTree->addChild(mustBe("symbol", ";"));
+            break;
+        } else if (have("symbol", ",")) {
+            classVarDecTree->addChild(mustBe("symbol", ","));
+            if (current()->getType() == "identifier") {
+                classVarDecTree->addChild(mustBe("identifier", current()->getValue()));
+            } else {
+                throw ParseException();
+            }
+        } else {
+            throw ParseException();
+        }
+    }
 
     return classVarDecTree;
 }
