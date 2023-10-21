@@ -19,8 +19,6 @@ ParseTree* CompilerParser::compileProgram() {
     if (have("keyword", "class")) {
         ParseTree* classTree = compileClass();
         program->addChild(classTree);
-    } else if (have("keyword", "static") || have("keyword", "int") || have("identifier", "a") || have("symbol", ";")) {
-        throw ParseException();
     } else {
         throw ParseException();
     }
@@ -38,13 +36,13 @@ ParseTree* CompilerParser::compileClass() {
 
     if (have("keyword", "class")) {
         classTree->addChild(current());
-        next(); // advanceTokenIfPossible
+        next(); // advance
     } else {
         throw ParseException();
     }
 
     if (current()->getType() == "identifier") {
-        std::string className = current()->getValue();
+        std::string identifierName = current()->getValue();
         classTree->addChild(current());
         next(); // advanceTokenIfPossible
     } else {
@@ -53,6 +51,7 @@ ParseTree* CompilerParser::compileClass() {
 
     // {
     if (have("symbol", "{")) {
+        std::string symbol = current()->getValue();
         classTree->addChild(current());
         next(); 
     } else {
@@ -61,15 +60,16 @@ ParseTree* CompilerParser::compileClass() {
 
     // class level subroutines (methods, constructors, functions)
     while (!(have("symbol", "}"))) {
-        ParseTree* subroutineTree = compileSubroutine();
-        if (subroutineTree != NULL) {
-            classTree->addChild(subroutineTree);
+        ParseTree* classVarDec = compileClassVarDec();
+        if (classVarDec != NULL) {
+            classTree->addChild(classVarDec);
         } else {
             throw ParseException();
         }
     }
 
     if (have("symbol", "}")) {
+        std::string cSymbol = current()->getValue();
         classTree->addChild(current());
         next(); 
     } else {
