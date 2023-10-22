@@ -28,7 +28,7 @@ ParseTree* CompilerParser::compileProgram() {
  * @return a ParseTree
  */
 ParseTree* CompilerParser::compileClass() {
-    ParseTree* classTree = new ParseTree("class", "");
+       ParseTree* classTree = new ParseTree("class", "");
 
     if (have("keyword", "class")) {
         classTree->addChild(current());
