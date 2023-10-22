@@ -449,8 +449,7 @@ ParseTree* CompilerParser::compileIf() {
     }
 
     if (have("keyword", "skip")) {
-        ParseTree* expressionTree = compileExpression();
-        ifStatementTree->addChild(expressionTree);
+        ifStatementTree->addChild(current());
         next();
     } else {
         throw ParseException();
