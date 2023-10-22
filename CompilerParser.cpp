@@ -1,3 +1,4 @@
+
 #include "CompilerParser.h"
 
 /**
@@ -437,10 +438,14 @@ ParseTree* CompilerParser::compileIf() {
         throw ParseException();
     }
 
-    // while (have("keyword", "skip")) {
-    //     ParseTree* expressionTree = compileExpression();
-    //     ifStatementTree->addChild(expressionTree);
-    // }
+    if (have("keyword", "skip")) {
+        ParseTree* expressionTree = compileExpression();
+        ifStatementTree->addChild(expressionTree);
+        next();
+    } else {
+        throw ParseException();
+    }
+   
 
     if (have("symbol", ")")) {
         ifStatementTree->addChild(current());
@@ -456,33 +461,31 @@ ParseTree* CompilerParser::compileIf() {
         throw ParseException();
     }
     
-    if(have("symbol","}")) {
+    if(have("symbol", "}")) {
         ifStatementTree->addChild(current());
         next(); // Advance to the next token
     } else {
         throw ParseException();
     }
 
-    if (have("keyword", "else")) {
-        ifStatementTree->addChild(current());
-        next(); // Advance to the next token
-    } else {
-        throw ParseException();
-    }
+    // while (have("keyword", "else")) {
+    //     ifStatementTree->addChild(current());
+    //     next(); // Advance to the next token
+    
+    //     if (have("symbol", "{")) {
+    //         ifStatementTree->addChild(current());
+    //         next(); // Advance to the next token
+    //     } else {
+    //         throw ParseException();
+    //     }
 
-    if (have("symbol", "{")) {
-        ifStatementTree->addChild(current());
-        next(); // Advance to the next token
-    } else {
-        throw ParseException();
-    }
-
-    if(have("symbol","}")) {
-        ifStatementTree->addChild(current());
-        next(); // Advance to the next token
-    } else {
-        throw ParseException();
-    }
+    //     if(have("symbol","}")) {
+    //         ifStatementTree->addChild(current());
+    //         next(); // Advance to the next token
+    //     } else {
+    //         throw ParseException();
+    //     }
+    // }
 
     return ifStatementTree;
 }
@@ -508,10 +511,10 @@ ParseTree* CompilerParser::compileWhile() {
         throw ParseException();
     }
 
-    // Parse the expression
-    ParseTree* expressionTree = compileExpression();
-    if (expressionTree != nullptr) {
+    if (have("keyword", "skip")) {
+        ParseTree* expressionTree = compileExpression();
         whileStatementTree->addChild(expressionTree);
+        next();
     } else {
         throw ParseException();
     }
@@ -530,17 +533,7 @@ ParseTree* CompilerParser::compileWhile() {
         throw ParseException();
     }
 
-    // Parse statements inside while block
-    while (!have("symbol", "}")) {
-        ParseTree* statement = compileStatements();
-        if (statement != nullptr) {
-            whileStatementTree->addChild(statement);
-        } else {
-            throw ParseException();
-        }
-    }
-
-    if (have("symbol", "}")) {
+    if(have("symbol", "}")) {
         whileStatementTree->addChild(current());
         next(); // Advance to the next token
     } else {
