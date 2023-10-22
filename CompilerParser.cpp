@@ -337,6 +337,16 @@ ParseTree* CompilerParser::compileStatements() {
         statements->addChild(letStatement);
     }
 
+    if (have("keyword", "do")) {
+        ParseTree* doStatement = compileDo();
+        statements->addChild(doStatement);
+    }
+
+    if (have("keyword", "return")) {
+        ParseTree* returnStatement = compileReturn();
+        statements->addChild(returnStatement);
+    }
+
 
     return statements;
 }
@@ -383,17 +393,6 @@ ParseTree* letStatementTree = new ParseTree("letStatement", "");
     } else {
         throw ParseException();
     }
-
-    while (have("keyword", "do")) {
-        ParseTree* doStatement = compileDo();
-        letStatementTree->addChild(doStatement);
-    }
-
-    while (have("keyword", "return")) {
-        ParseTree* returnStatement = compileReturn();
-        letStatementTree->addChild(returnStatement);
-    }
-
 
     return letStatementTree;
 }
