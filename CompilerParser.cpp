@@ -341,7 +341,7 @@ ParseTree* CompilerParser::compileStatements() {
         throw ParseException();
     }
 
-    if (current()->getType() == "integerConstant") {
+    if (have("keyword", "skip")) {
         statements->addChild(current());
         next();
     } else {

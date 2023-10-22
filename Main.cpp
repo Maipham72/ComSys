@@ -21,8 +21,8 @@ int main(int argc, char *argv[]) {
     // tokens.push_back(new Token("identifier", "Test"));
     // tokens.push_back(new Token("identifier", "new"));
     tokens.push_back(new Token("symbol", "("));
-    // tokens.push_back(new Token("keyword","int"));
-    // tokens.push_back(new Token("identifier", "a"));
+    tokens.push_back(new Token("keyword","int"));
+    tokens.push_back(new Token("identifier", "a"));
     // tokens.push_back(new Token("symbol", ","));
 
     // tokens.push_back(new Token("keyword","char"));
@@ -37,8 +37,6 @@ int main(int argc, char *argv[]) {
     // tokens.push_back(new Token("identifier","Test"));
     // tokens.push_back(new Token("identifier", "c"));
 
-
-
     tokens.push_back(new Token("symbol", ")"));
 
     tokens.push_back(new Token("symbol", "{"));
@@ -46,11 +44,11 @@ int main(int argc, char *argv[]) {
     tokens.push_back(new Token("keyword", "int"));    tokens.push_back(new Token("identifier", "a"));
     tokens.push_back(new Token("symbol", ";"));
 
-    // tokens.push_back(new Token("keyword", "let"));
-    // tokens.push_back(new Token("identifier", "a"));
-    // tokens.push_back(new Token("symbol", "="));
-    // tokens.push_back(new Token("integerConstant", "1"));
-    //tokens.push_back(new Token("symbol", ";"));
+    tokens.push_back(new Token("keyword", "let"));
+    tokens.push_back(new Token("identifier", "a"));
+    tokens.push_back(new Token("symbol", "="));
+    tokens.push_back(new Token("keyword", "skip"));
+    tokens.push_back(new Token("symbol", ";"));
 
     tokens.push_back(new Token("symbol", "}"));
     tokens.push_back(new Token("symbol", "}"));
