@@ -398,11 +398,12 @@ ParseTree* letStatementTree = new ParseTree("letStatement", "");
         throw ParseException();
     }
 
-
-    while (have("keyword", "skip")) {
+    if (have("keyword", "skip")) {
         ParseTree* expressionTree = compileExpression();
         letStatementTree->addChild(expressionTree);
-    } 
+    } else {
+        throw ParseException();
+    }
 
     if (have("symbol", ";")) {
         letStatementTree->addChild(current());
@@ -435,10 +436,10 @@ ParseTree* CompilerParser::compileIf() {
         throw ParseException();
     }
 
-    while (have("keyword", "skip")) {
-        ParseTree* expressionTree = compileExpression();
-        ifStatementTree->addChild(expressionTree);
-    }
+    // while (have("keyword", "skip")) {
+    //     ParseTree* expressionTree = compileExpression();
+    //     ifStatementTree->addChild(expressionTree);
+    // }
 
     if (have("symbol", ")")) {
         ifStatementTree->addChild(current());
@@ -611,9 +612,11 @@ ParseTree* CompilerParser::compileReturn() {
 ParseTree* CompilerParser::compileExpression() {
     ParseTree* expressionTree = new ParseTree("expression", "");
 
-    while (have("keyword", "skip")) {
+    if (have("keyword", "skip")) {
         expressionTree->addChild(current());
         next();
+    } else {
+        throw ParseException();
     }
 
     return expressionTree;
