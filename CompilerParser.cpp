@@ -51,15 +51,16 @@ ParseTree* CompilerParser::compileClass() {
         throw ParseException();
     }
 
+    while (have("keyword", "static") || have("keyword", "field")) {
+        ParseTree* classVarDecs = compileClassVarDec();
+        classTree->addChild(classVarDecs);
+    } 
+    
     while (have("keyword", "function") || have("keyword", "method") || have("keyword", "constructor")) {
         ParseTree* subroutine = compileSubroutine();
         classTree->addChild(subroutine);
     }
 
-    while (have("keyword", "static") || have("keyword", "field")) {
-        ParseTree* classVarDecs = compileClassVarDec();
-        classTree->addChild(classVarDecs);
-    } 
 
     if (have("symbol", "}")) {
         classTree->addChild(current());
