@@ -470,15 +470,12 @@ ParseTree* CompilerParser::compileIf() {
         throw ParseException();
     }
 
-    if(current()->getType() == "statements") {
-        ParseTree* statementsTree = compileStatements();
-        ifStatementTree->addChild(statementsTree);
-        next();
-    } else {
-        throw ParseException();
+    while (have("keyword", "let") || have("keyword", "if") || have("keyword", "while") || have("keyword", "do") || have("keyword", "return")) {
+        ParseTree* statements = compileStatements();
+        ifStatementTree->addChild(statements);
     }
     
-    if(have("symbol", "}")) {
+    if (have("symbol", "}")) {
         ifStatementTree->addChild(current());
         next(); // Advance to the next token
     } else {
