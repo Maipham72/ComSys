@@ -51,6 +51,11 @@ ParseTree* CompilerParser::compileClass() {
         throw ParseException();
     }
 
+    while (have("keyword", "function") || have("keyword", "method") || have("keyword", "constructor")) {
+        ParseTree* subroutine = compileSubroutine();
+        classTree->addChild(subroutine);
+    }
+
     while (have("keyword", "static") || have("keyword", "field")) {
         ParseTree* classVarDecs = compileClassVarDec();
         classTree->addChild(classVarDecs);
@@ -117,44 +122,54 @@ ParseTree* CompilerParser::compileClassVarDec() {
 ParseTree* CompilerParser::compileSubroutine() {
     ParseTree* subroutine = new ParseTree("subroutine", "");
 
-    // Parsing subroutine type
-    if (have("keyword", "constructor")) {
-        mustBe("keyword", "constructor");
-    } else if (have("keyword", "function")) {
-        mustBe("keyword", "function");
-    } else if (have("keyword", "method")) {
-        mustBe("keyword", "method");
+    if (have("keyword", "function")) {
+        subroutine->addChild(current());
+        next();
     } else {
         throw ParseException();
     }
 
-    // Parsing return type
     if (have("keyword", "void")) {
-        mustBe("keyword", "void");
-    } else if (have("keyword", "int")) {
-        mustBe("keyword", "int");
-    } else if (have("keyword", "char")) {
-        mustBe("keyword", "char");
-    } else if (have("keyword", "boolean")) {
-        mustBe("keyword", "boolean");
-    } else if (have("identifier", "")) {
-        mustBe("identifier", "");
+        subroutine->addChild(current());
+        next();
     } else {
         throw ParseException();
     }
 
-    Token* subroutineName = mustBe("identifier", "");
-    mustBe("symbol", "(");
-    // Parse parameter list
-    ParseTree* parameterList = compileParameterList();
-    mustBe("symbol", ")");
-    // Parse subroutine body
-    ParseTree* subroutineBody = compileSubroutineBody();
+    if(current()->getType() == "identifier") {
+        subroutine->addChild(current());
+        next();
+    } else {
+        throw ParseException();
+    }
 
-    // Adding children to the parse tree
-    subroutine->addChild(subroutineName);
-    subroutine->addChild(parameterList);
-    subroutine->addChild(subroutineBody);
+    if (have("symbol","(")) {
+        subroutine->addChild(current());
+        next();
+    } else {
+        throw ParseException();
+    }
+
+    if (have("symbol",")")) {
+        subroutine->addChild(current());
+        next();
+    } else {
+        throw ParseException();
+    }
+
+    if (have("symbol","{")) {
+        subroutine->addChild(current());
+        next();
+    } else {
+        throw ParseException();
+    }
+
+    if (have("symbol","}")) {
+        subroutine->addChild(current());
+        next();
+    } else {
+        throw ParseException();
+    }
 
     return subroutine;
 }
