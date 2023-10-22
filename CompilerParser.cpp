@@ -401,6 +401,7 @@ ParseTree* letStatementTree = new ParseTree("letStatement", "");
     if (have("keyword", "skip")) {
         ParseTree* expressionTree = compileExpression();
         letStatementTree->addChild(expressionTree);
+        next();
     } else {
         throw ParseException();
     }
@@ -614,7 +615,6 @@ ParseTree* CompilerParser::compileExpression() {
 
     if (have("keyword", "skip")) {
         expressionTree->addChild(current());
-        next();
     } else {
         throw ParseException();
     }
