@@ -550,6 +550,9 @@ ParseTree* CompilerParser::compileWhile() {
         throw ParseException();
     }
 
+    ParseTree* statements = compileStatements();
+    whileStatementTree->addChild(statements);
+
     if(have("symbol", "}")) {
         whileStatementTree->addChild(current());
         next(); // Advance to the next token
@@ -575,7 +578,8 @@ ParseTree* CompilerParser::compileDo() {
     }
 
     if (have("keyword", "skip")) {
-        doStatementTree->addChild(current());
+        ParseTree* expressionTree = compileExpression();
+        doStatementTree->addChild(expressionTree);
         next();
     } else {
         throw ParseException();
