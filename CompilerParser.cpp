@@ -149,7 +149,7 @@ ParseTree* CompilerParser::compileClassVarDec() {
 ParseTree* CompilerParser::compileSubroutine() {
     ParseTree* subroutine = new ParseTree("subroutine", "");
 
-    if (have("keyword", "function")) {
+    if (have("keyword", "function") || have("keyword", "method") || have("keyword", "constructor")) {
         subroutine->addChild(current());
         next();
     } else {
@@ -176,6 +176,11 @@ ParseTree* CompilerParser::compileSubroutine() {
     } else {
         throw ParseException();
     }
+    
+    while (have("keyword", "int") || have("keyword", "char") || have("keyword", "boolean") || have("identifier", "")) {
+        ParseTree* parameterList = compileParameterList();
+        subroutine->addChild(parameterList);
+    }
 
     if (have("symbol",")")) {
         subroutine->addChild(current());
@@ -184,18 +189,9 @@ ParseTree* CompilerParser::compileSubroutine() {
         throw ParseException();
     }
 
-    if (have("symbol","{")) {
-        subroutine->addChild(current());
-        next();
-    } else {
-        throw ParseException();
-    }
-
-    if (have("symbol","}")) {
-        subroutine->addChild(current());
-        next();
-    } else {
-        throw ParseException();
+    while (have("symbol", "{")) {
+        ParseTree* subRountineBody = compileSubroutineBody();
+        subroutine->addChild(subRountineBody);
     }
 
     return subroutine;
@@ -208,22 +204,27 @@ ParseTree* CompilerParser::compileSubroutine() {
 ParseTree* CompilerParser::compileParameterList() {
    ParseTree* parameterList = new ParseTree("parameterList", "");
 
-    while (current() && !have("symbol", ")")) {
-        // Process comma if encountered
-        if (have("symbol", ",")) {
-            next(); // advanceTokenIfPossible
-        }
+      if (have("keyword", "int") || have("keyword", "char") || have("keyword", "boolean") || have("identifier", "")) {
+        parameterList->addChild(current());
+        next(); // Advance to the next token
+    } else {
+        throw ParseException();
+    }
 
-        // Parse variable type
-        std::string varType = current()->getValue();
-        parameterList->addChild(new ParseTree("varType", varType));
-        next(); // advanceTokenIfPossible
+    if (current()->getType() == "identifier") {
+        parameterList->addChild(current());
+        next(); // Advance to the next token
+    } else {
+        throw ParseException();
+    }
 
-        // Parse variable name
-        if (current() && have("identifier", "")) {
-            std::string varName = current()->getValue();
-            parameterList->addChild(new ParseTree("varName", varName));
-            next(); // advanceTokenIfPossible
+    while (have("symbol", ",")) {
+        parameterList->addChild(current());
+        next(); // Advance to the next token
+
+        if (current()->getType() == "identifier") {
+            parameterList->addChild(current());
+            next(); // Advance to the next token
         } else {
             throw ParseException();
         }
@@ -237,14 +238,51 @@ ParseTree* CompilerParser::compileParameterList() {
  * @return a ParseTree
  */
 ParseTree* CompilerParser::compileSubroutineBody() {
-//   ParseTree* subroutineBody = new ParseTree("subroutineBody", "");
-//   mustBe("symbol", "{");
-//   ParseTree* varDecs = compileVarDec();
-//   ParseTree* statements = compileStatements();
-//   mustBe("symbol", "}");
-//   subroutineBody->addChild(varDecs);
-//   subroutineBody->addChild(statements);
-return NULL;
+    ParseTree* subroutineBody = new ParseTree("subroutineBody", "");
+
+    if (have("symbol","{")) {
+        subroutineBody->addChild(current());
+        next();
+    } else {
+        throw ParseException();
+    }
+
+    if (have("keyword","var")) {
+        subroutineBody->addChild(current());
+        next();
+    } else {
+        throw ParseException();
+    }
+
+    if (have("keyword","int") || have("keyword","char") || have("keyword","boolean") || have("identifier","")) {
+        subroutineBody->addChild(current());
+        next();
+    } else {
+        throw ParseException();
+    }
+
+    if (current()->getType() == "identifier") {
+        subroutineBody->addChild(current());
+        next();
+    } else {
+        throw ParseException();
+    }
+
+    if (have("symbol", ";")) {
+        subroutineBody->addChild(current());
+        next();
+    } else {
+        throw ParseException();
+    }
+
+    if (have("symbol","}")) {
+        subroutineBody->addChild(current());
+        next();
+    } else {
+        throw ParseException();
+    }
+
+    return subroutineBody;
 }
 
 /**
