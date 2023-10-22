@@ -609,6 +609,12 @@ ParseTree* CompilerParser::compileReturn() {
         throw ParseException();
     }
 
+    while (have("keyword", "skip")) {
+        ParseTree* expressionTree = compileExpression();
+        returnStatementTree->addChild(expressionTree);
+        next();
+    }
+
     if (have("symbol", ";")) {
         returnStatementTree->addChild(current());
         next();
