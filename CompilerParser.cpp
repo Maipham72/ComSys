@@ -332,40 +332,11 @@ ParseTree* CompilerParser::compileVarDec() {
 ParseTree* CompilerParser::compileStatements() {
     ParseTree* statements = new ParseTree("statements", "");
 
-    if (have("keyword", "let") || have("keyword", "if") || have("keyword", "while") || have("keyword", "do") || have("keyword", "return")) {
-        statements->addChild(current());
-        next();
-    } else {
-        throw ParseException();
+    if (have("keyword", "let")) {
+        ParseTree* letStatement = compileLet();
+        statements->addChild(letStatement);
     }
 
-    if (current()->getType() == "identifier") {
-        statements->addChild(current());
-        next();
-    } else {
-        throw ParseException();
-    }
-
-    if (have("symbol", "=")) {
-        statements->addChild(current());
-        next();
-    } else {
-        throw ParseException();
-    }
-
-    if (have("keyword", "skip")) {
-        statements->addChild(current());
-        next();
-    } else {
-        throw ParseException();
-    }
-
-    if (have("symbol", ";")) {
-        statements->addChild(current());
-        next();
-    } else {
-        throw ParseException();
-    }
 
     return statements;
 }
@@ -379,39 +350,39 @@ ParseTree* letStatementTree = new ParseTree("letStatement", "");
 
     if (have("keyword", "let")) {
         letStatementTree->addChild(current());
-        next(); // Advance to the next token
+        next();
     } else {
         throw ParseException();
     }
 
     if (current()->getType() == "identifier") {
         letStatementTree->addChild(current());
-        next(); // Advance to the next token
+        next();
     } else {
         throw ParseException();
     }
 
     if (have("symbol", "=")) {
         letStatementTree->addChild(current());
-        next(); // Advance to the next token
+        next();
     } else {
         throw ParseException();
     }
 
-    // Parse the expression
-    ParseTree* expressionTree = compileExpression();
-    if (expressionTree != nullptr) {
-        letStatementTree->addChild(expressionTree);
+    if (have("keyword", "skip")) {
+        letStatementTree->addChild(current());
+        next();
     } else {
         throw ParseException();
     }
 
     if (have("symbol", ";")) {
         letStatementTree->addChild(current());
-        next(); // Advance to the next token
+        next();
     } else {
         throw ParseException();
     }
+
 
     return letStatementTree;
 }
