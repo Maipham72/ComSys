@@ -399,12 +399,10 @@ ParseTree* letStatementTree = new ParseTree("letStatement", "");
     }
 
 
-    if (have("keyword", "skip")) {
-        letStatementTree->addChild(current());
-        next();
-    } else {
-        throw ParseException();
-    }
+    while (have("keyword", "skip")) {
+        ParseTree* expressionTree = compileExpression();
+        letStatementTree->addChild(expressionTree);
+    } 
 
     if (have("symbol", ";")) {
         letStatementTree->addChild(current());
@@ -437,12 +435,9 @@ ParseTree* CompilerParser::compileIf() {
         throw ParseException();
     }
 
-    // Parse the expression
-    ParseTree* expressionTree = compileExpression();
-    if (expressionTree != nullptr) {
+    while (have("keyword", "skip")) {
+        ParseTree* expressionTree = compileExpression();
         ifStatementTree->addChild(expressionTree);
-    } else {
-        throw ParseException();
     }
 
     if (have("symbol", ")")) {
@@ -458,18 +453,8 @@ ParseTree* CompilerParser::compileIf() {
     } else {
         throw ParseException();
     }
-
-    // Parse statements inside if block
-    while (!have("symbol", "}")) {
-        ParseTree* statement = compileStatements();
-        if (statement != nullptr) {
-            ifStatementTree->addChild(statement);
-        } else {
-            throw ParseException();
-        }
-    }
-
-    if (have("symbol", "}")) {
+    
+    if(have("symbol","}")) {
         ifStatementTree->addChild(current());
         next(); // Advance to the next token
     } else {
@@ -490,17 +475,7 @@ ParseTree* CompilerParser::compileIf() {
         throw ParseException();
     }
 
-    // Parse statements inside else block
-    while (!have("symbol", "}")) {
-        ParseTree* statement = compileStatements();
-        if (statement != nullptr) {
-            ifStatementTree->addChild(statement);
-        } else {
-            throw ParseException();
-        }
-    }
-
-    if (have("symbol", "}")) {
+    if(have("symbol","}")) {
         ifStatementTree->addChild(current());
         next(); // Advance to the next token
     } else {
@@ -633,7 +608,16 @@ ParseTree* CompilerParser::compileReturn() {
  * Generates a parse tree for an expression
  * @return a ParseTree
  */
-ParseTree* CompilerParser::compileExpression() { return NULL; }
+ParseTree* CompilerParser::compileExpression() {
+    ParseTree* expressionTree = new ParseTree("expression", "");
+
+    while (have("keyword", "skip")) {
+        expressionTree->addChild(current());
+        next();
+    }
+
+    return expressionTree;
+ }
 
 /**
  * Generates a parse tree for an expression term
