@@ -356,6 +356,7 @@ ParseTree* CompilerParser::compileStatements() {
  * @return a ParseTree
  */
 ParseTree* CompilerParser::compileLet() {
+
 ParseTree* letStatementTree = new ParseTree("letStatement", "");
 
     if (have("keyword", "let")) {
@@ -372,28 +373,25 @@ ParseTree* letStatementTree = new ParseTree("letStatement", "");
         throw ParseException();
     }
 
-    
-
     while (have("symbol","[")) {
         letStatementTree->addChild(current()); 
         next();
 
-        if (have("keyword", "skip")) {
+        if(have("keyword", "skip")) {
             letStatementTree->addChild(current());
             next();
         } else {
-            throw ParseException();
+            break;
         }
-
-        if (have("symbol", "]")) {
+        if(have("symbol", "]")) {
             letStatementTree->addChild(current());
             next();
         } else {
-            throw ParseException();
+            break;
         }
-        break;
     }
-    
+
+
     if (have("symbol", "=")) {
         letStatementTree->addChild(current());
         next();
@@ -401,7 +399,8 @@ ParseTree* letStatementTree = new ParseTree("letStatement", "");
         throw ParseException();
     }
 
-    while (have("keyword", "skip")) {
+
+    if (have("keyword", "skip")) {
         ParseTree* expressionTree = compileExpression();
         letStatementTree->addChild(expressionTree);
     }
@@ -431,6 +430,53 @@ ParseTree* CompilerParser::compileIf() {
     }
 
     if (have("symbol", "(")) {
+        ifStatementTree->addChild(current());
+        next(); // Advance to the next token
+    } else {
+        throw ParseException();
+    }
+
+    while (have("keyword", "skip")) {
+        ParseTree* expressionTree = compileExpression();
+        ifStatementTree->addChild(expressionTree);
+    }
+
+    if (have("symbol", ")")) {
+        ifStatementTree->addChild(current());
+        next(); // Advance to the next token
+    } else {
+        throw ParseException();
+    }
+
+    if (have("symbol", "{")) {
+        ifStatementTree->addChild(current());
+        next(); // Advance to the next token
+    } else {
+        throw ParseException();
+    }
+    
+    if(have("symbol","}")) {
+        ifStatementTree->addChild(current());
+        next(); // Advance to the next token
+    } else {
+        throw ParseException();
+    }
+
+    if (have("keyword", "else")) {
+        ifStatementTree->addChild(current());
+        next(); // Advance to the next token
+    } else {
+        throw ParseException();
+    }
+
+    if (have("symbol", "{")) {
+        ifStatementTree->addChild(current());
+        next(); // Advance to the next token
+    } else {
+        throw ParseException();
+    }
+
+    if(have("symbol","}")) {
         ifStatementTree->addChild(current());
         next(); // Advance to the next token
     } else {
