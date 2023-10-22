@@ -469,11 +469,12 @@ ParseTree* CompilerParser::compileIf() {
     } else {
         throw ParseException();
     }
+    
+    
+    ParseTree* statements = compileStatements();
+    ifStatementTree->addChild(statements);
+    next();
 
-    while (have("keyword", "let") || have("keyword", "if") || have("keyword", "while") || have("keyword", "do") || have("keyword", "return")) {
-        ParseTree* statements = compileStatements();
-        ifStatementTree->addChild(statements);
-    }
     
     if (have("symbol", "}")) {
         ifStatementTree->addChild(current());
