@@ -356,8 +356,6 @@ ParseTree* CompilerParser::compileStatements() {
  * @return a ParseTree
  */
 ParseTree* CompilerParser::compileLet() {
-
-
 ParseTree* letStatementTree = new ParseTree("letStatement", "");
 
     if (have("keyword", "let")) {
@@ -439,9 +437,12 @@ ParseTree* CompilerParser::compileIf() {
         throw ParseException();
     }
 
-    while (have("keyword", "skip")) {
-        ParseTree* expressionTree = compileExpression();
+    // Parse the expression
+    ParseTree* expressionTree = compileExpression();
+    if (expressionTree != nullptr) {
         ifStatementTree->addChild(expressionTree);
+    } else {
+        throw ParseException();
     }
 
     if (have("symbol", ")")) {
@@ -457,8 +458,18 @@ ParseTree* CompilerParser::compileIf() {
     } else {
         throw ParseException();
     }
-    
-    if(have("symbol","}")) {
+
+    // Parse statements inside if block
+    while (!have("symbol", "}")) {
+        ParseTree* statement = compileStatements();
+        if (statement != nullptr) {
+            ifStatementTree->addChild(statement);
+        } else {
+            throw ParseException();
+        }
+    }
+
+    if (have("symbol", "}")) {
         ifStatementTree->addChild(current());
         next(); // Advance to the next token
     } else {
@@ -479,13 +490,22 @@ ParseTree* CompilerParser::compileIf() {
         throw ParseException();
     }
 
-    if(have("symbol","}")) {
+    // Parse statements inside else block
+    while (!have("symbol", "}")) {
+        ParseTree* statement = compileStatements();
+        if (statement != nullptr) {
+            ifStatementTree->addChild(statement);
+        } else {
+            throw ParseException();
+        }
+    }
+
+    if (have("symbol", "}")) {
         ifStatementTree->addChild(current());
         next(); // Advance to the next token
     } else {
         throw ParseException();
     }
-
 
     return ifStatementTree;
 }
@@ -613,18 +633,7 @@ ParseTree* CompilerParser::compileReturn() {
  * Generates a parse tree for an expression
  * @return a ParseTree
  */
-ParseTree* CompilerParser::compileExpression() {
-    ParseTree* expressionTree = new ParseTree("expression","");
-
-    if (have("keyword", "skip")) {
-        expressionTree->addChild(current());
-        next();
-    } else {
-        throw ParseException();
-    }
-
-    return expressionTree;
-}
+ParseTree* CompilerParser::compileExpression() { return NULL; }
 
 /**
  * Generates a parse tree for an expression term
