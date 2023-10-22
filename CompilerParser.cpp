@@ -156,11 +156,9 @@ ParseTree* CompilerParser::compileSubroutine() {
         throw ParseException();
     }
 
-    if (have("keyword", "void")) {
+    while (have("keyword","void")) {
         subroutine->addChild(current());
         next();
-    } else {
-        throw ParseException();
     }
 
     if(current()->getType() == "identifier") {
@@ -168,6 +166,11 @@ ParseTree* CompilerParser::compileSubroutine() {
         next();
     } else {
         throw ParseException();
+    }
+
+    while (have("identifier", "new")) {
+        subroutine->addChild(current());
+        next();
     }
 
     if (have("symbol","(")) {
