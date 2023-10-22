@@ -207,7 +207,7 @@ ParseTree* CompilerParser::compileSubroutine() {
 ParseTree* CompilerParser::compileParameterList() {
    ParseTree* parameterList = new ParseTree("parameterList", "");
 
-      if (have("keyword", "int") || have("keyword", "char") || have("keyword", "boolean") || have("identifier", "")) {
+    if (have("keyword", "int") || have("keyword", "char") || have("keyword", "boolean") || have("identifier", "") || (current()->getType() == "identifier")) {
         parameterList->addChild(current());
         next(); // Advance to the next token
     } else {
@@ -225,14 +225,21 @@ ParseTree* CompilerParser::compileParameterList() {
         parameterList->addChild(current());
         next(); // Advance to the next token
 
-        if (current()->getType() == "identifier") {
-            parameterList->addChild(current());
-            next(); // Advance to the next token
-        } else {
-            throw ParseException();
-        }
+        if (have("keyword", "int") || have("keyword", "char") || have("keyword", "boolean") || have("identifier", "") || (current()->getType() == "identifier")) {
+        parameterList->addChild(current());
+        next(); // Advance to the next token
+    } else {
+        throw ParseException();
     }
 
+    if (current()->getType() == "identifier") {
+        parameterList->addChild(current());
+        next(); // Advance to the next token
+    } else {
+        throw ParseException();
+    }
+    
+    }
     return parameterList;
 }
 
