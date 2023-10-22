@@ -288,7 +288,7 @@ ParseTree* CompilerParser::compileVarDec() {
         varDecTree->addChild(current());
         next();
 
-        if (have("keyword","int") || have("keyword","char") || have("keyword","boolean") || have("identifier","")) {
+        if (have("keyword","int") || have("keyword","char") || have("keyword","boolean") || have("identifier","") || (current()->getType() == "identifier")) {
             varDecTree->addChild(current());
             next();
         } else {
