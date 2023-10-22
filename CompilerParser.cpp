@@ -262,7 +262,6 @@ ParseTree* CompilerParser::compileSubroutineBody() {
         subroutineBody->addChild(varDec);
     }
 
-    
     if (have("symbol","}")) {
         subroutineBody->addChild(current());
         next();
@@ -278,7 +277,7 @@ ParseTree* CompilerParser::compileSubroutineBody() {
  * @return a ParseTree
  */
 ParseTree* CompilerParser::compileVarDec() {
-    ParseTree* varDecTree = new ParseTree("VarDec", "");
+    ParseTree* varDecTree = new ParseTree("varDec", "");
 
     while (have("keyword","var")) {
         varDecTree->addChild(current());
