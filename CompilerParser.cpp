@@ -238,7 +238,7 @@ ParseTree* CompilerParser::compileParameterList() {
     } else {
         throw ParseException();
     }
-    
+
     }
     return parameterList;
 }
@@ -258,31 +258,11 @@ ParseTree* CompilerParser::compileSubroutineBody() {
     }
 
     while (have("keyword","var")) {
-        subroutineBody->addChild(current());
-        next();
-
-        if (have("keyword","int") || have("keyword","char") || have("keyword","boolean") || have("identifier","")) {
-            subroutineBody->addChild(current());
-            next();
-        } else {
-            throw ParseException();
-        }
-
-        if (current()->getType() == "identifier") {
-            subroutineBody->addChild(current());
-            next();
-        } else {
-            throw ParseException();
-        }
-
-        if (have("symbol", ";")) {
-            subroutineBody->addChild(current());
-            next();
-        } else {
-            throw ParseException();
-        }
+        ParseTree* varDec = compileVarDec();
+        subroutineBody->addChild(varDec);
     }
 
+    
     if (have("symbol","}")) {
         subroutineBody->addChild(current());
         next();
@@ -300,36 +280,27 @@ ParseTree* CompilerParser::compileSubroutineBody() {
 ParseTree* CompilerParser::compileVarDec() {
     ParseTree* varDecTree = new ParseTree("VarDec", "");
 
-    while (have("keyword", "var")) {
-        // "var" keyword
+    while (have("keyword","var")) {
         varDecTree->addChild(current());
-        next(); // Advance to the next token
+        next();
 
-        // Variable data type
-        varDecTree->addChild(current());
-        next(); // Advance to the next token
-
-        // Get all variable names for multiple variable declaration
-        while (true) {
-            if (have("identifier", "")) {
-                varDecTree->addChild(current());
-                next(); // Advance to the next token
-            } else {
-                break;
-            }
-
-            if (have("symbol", ",")) {
-                varDecTree->addChild(current());
-                next(); // Advance to the next token
-            } else {
-                break;
-            }
+        if (have("keyword","int") || have("keyword","char") || have("keyword","boolean") || have("identifier","")) {
+            varDecTree->addChild(current());
+            next();
+        } else {
+            throw ParseException();
         }
 
-        // Semicolon ";"
+        if (current()->getType() == "identifier") {
+            varDecTree->addChild(current());
+            next();
+        } else {
+            throw ParseException();
+        }
+
         if (have("symbol", ";")) {
             varDecTree->addChild(current());
-            next(); // Advance to the next token
+            next();
         } else {
             throw ParseException();
         }
