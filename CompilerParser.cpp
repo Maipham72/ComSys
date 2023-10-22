@@ -380,15 +380,12 @@ ParseTree* letStatementTree = new ParseTree("letStatement", "");
         if(have("keyword", "skip")) {
             letStatementTree->addChild(current());
             next();
-        } else {
-            break;
         }
-        if(have("symbol", "]")) {
+
+        if (have("symbol", "]")) {
             letStatementTree->addChild(current());
             next();
-        } else {
-            break;
-        }
+        } 
     }
 
 
