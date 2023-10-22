@@ -391,6 +391,7 @@ ParseTree* letStatementTree = new ParseTree("letStatement", "");
         } else {
             throw ParseException();
         }
+        break;
     }
     
     if (have("symbol", "=")) {
