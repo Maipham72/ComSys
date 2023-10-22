@@ -470,10 +470,11 @@ ParseTree* CompilerParser::compileIf() {
         throw ParseException();
     }
     
-    
-    ParseTree* statements = compileStatements();
-    ifStatementTree->addChild(statements);
-    next();
+    while (current()->getValue() != "}") {
+        ParseTree* statements = compileStatements();
+        ifStatementTree->addChild(statements);
+        next();
+    } 
 
     
     if (have("symbol", "}")) {
