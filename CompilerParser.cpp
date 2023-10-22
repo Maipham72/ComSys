@@ -400,7 +400,7 @@ ParseTree* letStatementTree = new ParseTree("letStatement", "");
     }
 
 
-    if (have("keyword", "skip")) {
+    while (have("keyword", "skip")) {
         ParseTree* expressionTree = compileExpression();
         letStatementTree->addChild(expressionTree);
     }
