@@ -485,24 +485,24 @@ ParseTree* CompilerParser::compileIf() {
         throw ParseException();
     }
 
-    while (have("keyword", "else")) {
-        ifStatementTree->addChild(current());
-        next(); // Advance to the next token
+    // while (have("keyword", "else")) {
+    //     ifStatementTree->addChild(current());
+    //     next(); // Advance to the next token
     
-        if (have("symbol", "{")) {
-            ifStatementTree->addChild(current());
-            next(); // Advance to the next token
-        } else {
-            throw ParseException();
-        }
+    //     if (have("symbol", "{")) {
+    //         ifStatementTree->addChild(current());
+    //         next(); // Advance to the next token
+    //     } else {
+    //         throw ParseException();
+    //     }
 
-        if(have("symbol","}")) {
-            ifStatementTree->addChild(current());
-            next(); // Advance to the next token
-        } else {
-            throw ParseException();
-        }
-    }
+    //     if(have("symbol","}")) {
+    //         ifStatementTree->addChild(current());
+    //         next(); // Advance to the next token
+    //     } else {
+    //         throw ParseException();
+    //     }
+    // }
 
     return ifStatementTree;
 }
