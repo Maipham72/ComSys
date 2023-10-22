@@ -156,7 +156,7 @@ ParseTree* CompilerParser::compileSubroutine() {
         throw ParseException();
     }
 
-    while (have("keyword","void")) {
+    while (have("keyword","void") || have("keyword","int") || have("keyword","char") || have("keyword","boolean") || have("identifier","")) {
         subroutine->addChild(current());
         next();
     }
