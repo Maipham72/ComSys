@@ -92,30 +92,45 @@ ParseTree* CompilerParser::compileClassVarDec() {
         throw ParseException();
     }
 
+    if (have("keyword", "int") || have("keyword", "char") || have("keyword", "boolean") || have("identifier", "")) {
+        classVarDecTree->addChild(current());
+        next(); // Advance to the next token
+    } else {
+        throw ParseException();
+    }
 
-    while (current()->getType() != "symbol" || current()->getValue() != ";") {
-        
-        if (have("keyword", "int") || have("keyword", "char") || have("keyword", "boolean")) {
+    if (current()->getType() == "identifier") {
+        classVarDecTree->addChild(current());
+        next(); // Advance to the next token
+    } else {
+        throw ParseException();
+    }
+
+    while (have("symbol", ",")) {
+        classVarDecTree->addChild(current());
+        next(); // Advance to the next token
+
+        if (current()->getType() == "identifier") {
             classVarDecTree->addChild(current());
             next(); // Advance to the next token
         } else {
             throw ParseException();
         }
-
-        if (current()->getType() == "identifier") {
-        classVarDecTree->addChild(current());
-        next(); // Advance to the next token
-        } else {
-        throw ParseException();
-        }
-
-        if (have("symbol",",")) {
-        classVarDecTree->addChild(current());
-        next(); // Advance to the next token
-        } else {
-            throw ParseException();
-        }
     }
+
+    // if (have("symbol",",")) {
+    //     classVarDecTree->addChild(current());
+    //     next(); // Advance to the next token
+    // } else {
+    //     throw ParseException();
+    // }
+
+    // if (current()->getType() == "identifier") {
+    //     classVarDecTree->addChild(current());
+    //     next(); // Advance to the next token
+    // } else {
+    //     throw ParseException();
+    // }
 
     if (have("symbol", ";")) {
         classVarDecTree->addChild(current());
