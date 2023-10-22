@@ -56,6 +56,17 @@ int main(int argc, char *argv[]) {
     tokens.push_back(new Token("symbol", ")"));
 
     tokens.push_back(new Token("symbol", "{"));
+    tokens.push_back(new Token("keyword", "if"));
+    tokens.push_back(new Token("symbol", "("));
+    tokens.push_back(new Token("keyword", "skip"));
+    tokens.push_back(new Token("symbol", ")"));
+    tokens.push_back(new Token("symbol", "{"));
+    tokens.push_back(new Token("symbol", "}"));
+    tokens.push_back(new Token("keyword", "else"));
+    tokens.push_back(new Token("symbol", "{"));
+    tokens.push_back(new Token("symbol", "}"));
+    
+
     //tokens.push_back(new Token("keyword", "statements"));
     // tokens.push_back(new Token("keyword", "do"));
 
