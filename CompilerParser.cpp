@@ -449,7 +449,8 @@ ParseTree* CompilerParser::compileIf() {
     }
 
     if (have("keyword", "skip")) {
-        ifStatementTree->addChild(current());
+        ParseTree* expressionTree = compileExpression();
+        ifStatementTree->addChild(expressionTree);
         next();
     } else {
         throw ParseException();
@@ -468,6 +469,14 @@ ParseTree* CompilerParser::compileIf() {
     } else {
         throw ParseException();
     }
+
+    if(current()->getType() == "statements") {
+        ParseTree* statementsTree = compileStatements();
+        ifStatementTree->addChild(statementsTree);
+        next();
+    } else {
+        throw ParseException();
+    }
     
     if(have("symbol", "}")) {
         ifStatementTree->addChild(current());
@@ -476,24 +485,24 @@ ParseTree* CompilerParser::compileIf() {
         throw ParseException();
     }
 
-    // while (have("keyword", "else")) {
-    //     ifStatementTree->addChild(current());
-    //     next(); // Advance to the next token
+    while (have("keyword", "else")) {
+        ifStatementTree->addChild(current());
+        next(); // Advance to the next token
     
-    //     if (have("symbol", "{")) {
-    //         ifStatementTree->addChild(current());
-    //         next(); // Advance to the next token
-    //     } else {
-    //         throw ParseException();
-    //     }
+        if (have("symbol", "{")) {
+            ifStatementTree->addChild(current());
+            next(); // Advance to the next token
+        } else {
+            throw ParseException();
+        }
 
-    //     if(have("symbol","}")) {
-    //         ifStatementTree->addChild(current());
-    //         next(); // Advance to the next token
-    //     } else {
-    //         throw ParseException();
-    //     }
-    // }
+        if(have("symbol","}")) {
+            ifStatementTree->addChild(current());
+            next(); // Advance to the next token
+        } else {
+            throw ParseException();
+        }
+    }
 
     return ifStatementTree;
 }
