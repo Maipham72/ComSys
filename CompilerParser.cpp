@@ -384,6 +384,13 @@ ParseTree* letStatementTree = new ParseTree("letStatement", "");
         }
     }
 
+    if(have("symbol", "]")) {
+        letStatementTree->addChild(current());
+        next();
+    } else {
+        throw ParseException();
+    }
+
     if (have("symbol", "=")) {
         letStatementTree->addChild(current());
         next();
