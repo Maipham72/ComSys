@@ -262,6 +262,11 @@ ParseTree* CompilerParser::compileSubroutineBody() {
         subroutineBody->addChild(varDec);
     }
 
+    while (have("keyword", "let") || have("keyword", "if") || have("keyword", "while") || have("keyword", "do") || have("keyword", "return")) {
+        ParseTree* statements = compileStatements();
+        subroutineBody->addChild(statements);
+    }
+
     if (have("symbol","}")) {
         subroutineBody->addChild(current());
         next();
@@ -315,27 +320,39 @@ ParseTree* CompilerParser::compileVarDec() {
 ParseTree* CompilerParser::compileStatements() {
     ParseTree* statements = new ParseTree("statements", "");
 
-    while ((current()->getType() == "keyword") && (have("keyword", "let") || have("keyword", "if") || have("keyword", "while") || have("keyword", "do") || have("keyword", "return"))) {
+    if (have("keyword", "let") || have("keyword", "if") || have("keyword", "while") || have("keyword", "do") || have("keyword", "return")) {
+        statements->addChild(current());
+        next();
+    } else {
+        throw ParseException();
+    }
 
-        if (have("keyword", "let")) {
-            ParseTree* letTree = compileLet();
-            statements->addChild(letTree);
-        } else if (have("keyword", "if")) {
-            ParseTree* ifTree = compileIf();
-            statements->addChild(ifTree);
-        } else if (have("keyword", "while")) {
-            ParseTree* whileTree = compileWhile();
-            statements->addChild(whileTree);
-        } else if (have("keyword", "do")) {
-            ParseTree* doTree = compileDo();
-            statements->addChild(doTree);
-        } else if (have("keyword", "return")) {
-            ParseTree* returnTree = compileReturn();
-            statements->addChild(returnTree);
-        } else {
-            throw ParseException();
-        }
+    if (current()->getType() == "identifier") {
+        statements->addChild(current());
+        next();
+    } else {
+        throw ParseException();
+    }
 
+    if (have("symbol", "=")) {
+        statements->addChild(current());
+        next();
+    } else {
+        throw ParseException();
+    }
+
+    if (current()->getType() == "integerConstant") {
+        statements->addChild(current());
+        next();
+    } else {
+        throw ParseException();
+    }
+
+    if (have("symbol", ";")) {
+        statements->addChild(current());
+        next();
+    } else {
+        throw ParseException();
     }
 
     return statements;
