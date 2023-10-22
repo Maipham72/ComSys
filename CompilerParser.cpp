@@ -372,19 +372,25 @@ ParseTree* letStatementTree = new ParseTree("letStatement", "");
         throw ParseException();
     }
 
+    
+
     while (have("symbol","[")) {
         letStatementTree->addChild(current()); 
         next();
 
-        while (have("keyword", "skip")) {
-            ParseTree* expressionTree = compileExpression();
-            letStatementTree->addChild(expressionTree);
-        } 
+        if (have("keyword", "skip")) {
+            letStatementTree->addChild(current());
+            next();
+        } else {
+            throw ParseException();
+        }
 
         if (have("symbol", "]")) {
             letStatementTree->addChild(current());
             next();
-        } 
+        } else {
+            throw ParseException();
+        }
     }
     
     if (have("symbol", "=")) {
